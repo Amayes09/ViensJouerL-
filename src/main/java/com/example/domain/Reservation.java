@@ -1,5 +1,6 @@
-package com.example.entity;
+package com.example.domain;
 
+import com.example.domain.User;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -14,7 +15,7 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private com.example.domain.User user;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
@@ -33,7 +34,7 @@ public class Reservation {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public User getUser() { return user; }
+    public com.example.domain.User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
     public Event getEvent() { return event; }

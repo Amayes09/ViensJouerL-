@@ -1,5 +1,6 @@
-package com.example.entity;
+package com.example.domain;
 
+import com.example.domain.User;
 import jakarta.persistence.*;
 import java.time.Instant;
 
@@ -14,9 +15,10 @@ public class Notification {
     private String message;
     private Instant createdAt;
 
+    // !!!!! jointure ici absente sur le schéma
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private com.example.domain.User user;
 
     // Getters et setters
     public Long getId() { return id; }
@@ -28,6 +30,6 @@ public class Notification {
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public User getUser() { return user; }
+    public com.example.domain.User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 }
