@@ -6,24 +6,30 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 @Stateless
 public class UserService {
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Inject
-    UserCreatedProducer producer;
+    private UserCreatedProducer producer;
 
-    public User createUser(String name, String email) {
-        User u = new User(name, email);
-        em.persist(u);
-        producer.sendUserCreatedEvent(u);
-        return u;
+    public User register(User user) {
+        // Ici, on pourrait hacher le mot de passe avant de sauvegarder
+        em.persist(user);
+        // Envoi de la notification JMS
+        producer.sendUserCreatedEvent(user);
+        return user;
     }
 
-    public User findUser(Long id) {
+    public User findById(Long id) {
         return em.find(User.class, id);
+    }
+
+    public List<User> findAll() {
+        return em.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 }

@@ -45,4 +45,7 @@ public class Reservation {
 
     public Payment getPayment() { return payment; }
     public void setPayment(Payment payment) { this.payment = payment; }
+
+    public Date getReservationDate() { return reservationDate; }
+    public void setReservationDate(Date reservationDate) { this.reservationDate = reservationDate; }
 }

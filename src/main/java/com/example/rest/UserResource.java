@@ -1,4 +1,39 @@
 package com.example.rest;
 
+import com.example.domain.User;
+import com.example.service.UserService;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.List;
+
+@Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
+
+    @Inject
+    private UserService userService;
+
+    @POST
+    public Response createUser(User user) {
+        User created = userService.register(user);
+        return Response.status(Response.Status.CREATED).entity(created).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response getUser(@PathParam("id") Long id) {
+        User user = userService.findById(id);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(user).build();
+    }
+
+    @GET
+    public List<User> getAllUsers() {
+        return userService.findAll();
+    }
 }
