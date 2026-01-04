@@ -1,9 +1,16 @@
 package com.example.domain;
 
-import com.example.domain.User;
-import jakarta.persistence.*;
-
 import java.util.Date;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "reservations")
@@ -30,6 +37,15 @@ public class Reservation {
 
     private Date reservationDate;
 
+    public Reservation() {}
+
+    public Reservation(User user, Event event, Venue venue) {
+        this.user = user;
+        this.event = event;
+        this.venue = venue;
+        this.reservationDate = new Date();
+    }
+
     // Getters et setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -45,4 +61,7 @@ public class Reservation {
 
     public Payment getPayment() { return payment; }
     public void setPayment(Payment payment) { this.payment = payment; }
+
+    public Date getReservationDate() { return reservationDate; }
+    public void setReservationDate(Date reservationDate) { this.reservationDate = reservationDate; }
 }

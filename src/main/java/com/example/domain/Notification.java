@@ -1,8 +1,14 @@
 package com.example.domain;
 
-import com.example.domain.User;
-import jakarta.persistence.*;
 import java.time.Instant;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "notifications")
@@ -15,10 +21,17 @@ public class Notification {
     private String message;
     private Instant createdAt;
 
-    // !!!!! jointure ici absente sur le schéma
     @ManyToOne
     @JoinColumn(name = "user_id")
     private com.example.domain.User user;
+
+    public Notification() {}
+
+    public Notification(String message, User user) {
+        this.message = message;
+        this.user = user;
+        this.createdAt = Instant.now();
+    }
 
     // Getters et setters
     public Long getId() { return id; }
