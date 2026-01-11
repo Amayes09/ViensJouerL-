@@ -1,45 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Reservation;
-import com.example.domain.User;
-import com.example.domain.Venue;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import java.util.Date;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class ReservationService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Reservation createReservation(Long userId, Long venueId, Date date) throws Exception {
-        User user = em.find(User.class, userId);
-        Venue venue = em.find(Venue.class, venueId);
-
-        if (user == null || venue == null) {
-            throw new IllegalArgumentException("Utilisateur ou Salle introuvable");
+    public void create(Reservation reservation) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(reservation);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
+    }
 
-        if (!venue.getIsAvailable()) {
-            throw new IllegalStateException("La salle n'est pas disponible");
+    public Reservation findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Reservation.class, id);
+        } finally {
+            em.close();
         }
-
-        // Vérification simplifiée de chevauchement (à étoffer selon besoins)
-        // Check if a reservation exists for this venue at this time...
-        
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setVenue(venue);
-        reservation.setReservationDate(date);
-        
-        em.persist(reservation);
-        return reservation;
     }
 
     public List<Reservation> findAll() {
-        return em.createQuery("SELECT r FROM Reservation r", Reservation.class).getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT r FROM Reservation r", Reservation.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

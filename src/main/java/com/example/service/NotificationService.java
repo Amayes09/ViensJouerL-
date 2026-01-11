@@ -1,39 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Notification;
-import com.example.domain.User;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import java.time.Instant;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class NotificationService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Notification createNotification(Long userId, String message) {
-        User user = em.find(User.class, userId);
-        if (user == null) {
-            throw new IllegalArgumentException("Utilisateur introuvable");
+    public void create(Notification notification) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(notification);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
-
-        Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setMessage(message);
-        notification.setCreatedAt(Instant.now());
-
-        em.persist(notification);
-        return notification;
     }
 
     public Notification findById(Long id) {
-        return em.find(Notification.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Notification.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<Notification> findAll() {
-        return em.createQuery("SELECT n FROM Notification n", Notification.class).getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT n FROM Notification n", Notification.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

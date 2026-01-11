@@ -17,22 +17,23 @@ public class TimeslotResource {
     private TimeslotService timeslotService;
 
     @POST
-    public Response createTimeslot(Timeslot timeslot) {
-        Timeslot created = timeslotService.createTimeslot(timeslot);
-        return Response.status(Response.Status.CREATED).entity(created).build();
-    }
-
-    @GET
-    public List<Timeslot> getAllTimeslots() {
-        return timeslotService.findAll();
+    public Response create(Timeslot timeslot) {
+        timeslotService.create(timeslot);
+        return Response.status(Response.Status.CREATED).entity(timeslot).build();
     }
 
     @GET
     @Path("/{id}")
-    public Response getTimeslot(@PathParam("id") Long id) {
-        Timeslot t = timeslotService.findById(id);
-        if (t != null)
-            return Response.ok(t).build();
-        return Response.status(Response.Status.NOT_FOUND).build();
+    public Response findById(@PathParam("id") Long id) {
+        Timeslot timeslot = timeslotService.findById(id);
+        if (timeslot == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(timeslot).build();
+    }
+
+    @GET
+    public List<Timeslot> findAll() {
+        return timeslotService.findAll();
     }
 }

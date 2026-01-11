@@ -1,35 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Event;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class EventService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Event createEvent(Event event) {
-        // Validation métier possible ici (ex: date dans le futur)
-        em.persist(event);
-        return event;
+    public void create(Event event) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(event);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     public Event findById(Long id) {
-        return em.find(Event.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Event.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<Event> findAll() {
-        return em.createQuery("SELECT e FROM Event e", Event.class).getResultList();
-    }
-    
-    public void deleteEvent(Long id) {
-        Event e = findById(id);
-        if (e != null) {
-            em.remove(e);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT e FROM Event e", Event.class).getResultList();
+        } finally {
+            em.close();
         }
     }
 }

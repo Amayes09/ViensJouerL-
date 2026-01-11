@@ -1,42 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Payment;
-import com.example.domain.Reservation;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import java.math.BigDecimal;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class PaymentService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Payment processPayment(Long reservationId, BigDecimal amount, String method) {
-        Reservation reservation = em.find(Reservation.class, reservationId);
-        if (reservation == null) {
-            throw new IllegalArgumentException("Réservation introuvable");
+    public void create(Payment payment) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(payment);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
-
-        Payment payment = new Payment();
-        payment.setReservation(reservation);
-        payment.setAmount(amount);
-        payment.setMethod(method);
-
-        // Simulation du traitement métier
-        payment.processPayment();
-
-        em.persist(payment);
-        return payment;
     }
 
     public Payment findById(Long id) {
-        return em.find(Payment.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Payment.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<Payment> findAll() {
-        return em.createQuery("SELECT p FROM Payment p", Payment.class).getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM Payment p", Payment.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

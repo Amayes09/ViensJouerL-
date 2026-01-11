@@ -17,21 +17,23 @@ public class EventResource {
     private EventService eventService;
 
     @POST
-    public Response createEvent(Event event) {
-        Event created = eventService.createEvent(event);
-        return Response.status(Response.Status.CREATED).entity(created).build();
-    }
-
-    @GET
-    public List<Event> getAllEvents() {
-        return eventService.findAll();
+    public Response create(Event event) {
+        eventService.create(event);
+        return Response.status(Response.Status.CREATED).entity(event).build();
     }
 
     @GET
     @Path("/{id}")
-    public Response getEvent(@PathParam("id") Long id) {
-        Event e = eventService.findById(id);
-        if (e != null) return Response.ok(e).build();
-        return Response.status(Response.Status.NOT_FOUND).build();
+    public Response findById(@PathParam("id") Long id) {
+        Event event = eventService.findById(id);
+        if (event == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(event).build();
+    }
+
+    @GET
+    public List<Event> findAll() {
+        return eventService.findAll();
     }
 }

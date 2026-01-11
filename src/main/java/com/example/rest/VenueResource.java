@@ -17,13 +17,23 @@ public class VenueResource {
     private VenueService venueService;
 
     @POST
-    public Response createVenue(Venue venue) {
-        Venue created = venueService.createVenue(venue);
-        return Response.status(Response.Status.CREATED).entity(created).build();
+    public Response create(Venue venue) {
+        venueService.create(venue);
+        return Response.status(Response.Status.CREATED).entity(venue).build();
     }
 
     @GET
-    public List<Venue> getAllVenues() {
+    @Path("/{id}")
+    public Response findById(@PathParam("id") Long id) {
+        Venue venue = venueService.findById(id);
+        if (venue == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(venue).build();
+    }
+
+    @GET
+    public List<Venue> findAll() {
         return venueService.findAll();
     }
 }

@@ -1,7 +1,10 @@
 package com.example.rest;
 
 import com.example.domain.Payment;
+import com.example.domain.Reservation;
 import com.example.service.PaymentService;
+import com.example.service.ReservationService;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,7 +20,9 @@ public class PaymentResource {
     @Inject
     private PaymentService paymentService;
 
-    // DTO interne pour la requête de paiement
+    @Inject
+    private ReservationService reservationService;
+
     public static class PaymentRequest {
         public Long reservationId;
         public BigDecimal amount;
@@ -25,26 +30,34 @@ public class PaymentResource {
     }
 
     @POST
-    public Response makePayment(PaymentRequest req) {
-        try {
-            Payment p = paymentService.processPayment(req.reservationId, req.amount, req.method);
-            return Response.ok(p).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+    public Response create(PaymentRequest request) {
+        Reservation reservation = reservationService.findById(request.reservationId);
+        if (reservation == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Reservation introuvable").build();
         }
-    }
 
-    @GET
-    public List<Payment> getAllPayments() {
-        return paymentService.findAll();
+        Payment payment = new Payment();
+        payment.setAmount(request.amount);
+        payment.setMethod(request.method);
+        payment.setReservation(reservation);
+        payment.processPayment(); // valide le paiement
+
+        paymentService.create(payment);
+
+        return Response.status(Response.Status.CREATED).entity(payment).build();
     }
 
     @GET
     @Path("/{id}")
-    public Response getPayment(@PathParam("id") Long id) {
+    public Response findById(@PathParam("id") Long id) {
         Payment p = paymentService.findById(id);
-        if (p != null)
-            return Response.ok(p).build();
-        return Response.status(Response.Status.NOT_FOUND).build();
+        if (p == null) return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(p).build();
+    }
+
+    @GET
+    public List<Payment> findAll() {
+        return paymentService.findAll();
     }
 }

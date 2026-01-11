@@ -1,12 +1,20 @@
 package com.example.rest;
 
 import com.example.domain.Reservation;
+import com.example.domain.User;
+import com.example.domain.Event;
+import com.example.domain.Venue;
 import com.example.service.ReservationService;
+import com.example.service.UserService;
+import com.example.service.EventService;
+import com.example.service.VenueService;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Date;
+import java.util.List;
 
 @Path("/reservations")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,30 +24,58 @@ public class ReservationResource {
     @Inject
     private ReservationService reservationService;
 
-    // DTO simple pour la requête de création
+    // On injecte les autres services pour retrouver les liens
+    @Inject
+    private UserService userService;
+    @Inject
+    private EventService eventService;
+    @Inject
+    private VenueService venueService;
+
+    // DTO pour la requête
     public static class ReservationRequest {
         public Long userId;
+        public Long eventId;
         public Long venueId;
-        public Date date;
+        public Date reservationDate;
     }
 
     @POST
-    public Response createReservation(ReservationRequest request) {
-        try {
-            Reservation res = reservationService.createReservation(
-                request.userId, 
-                request.venueId, 
-                request.date
-            );
-            return Response.status(Response.Status.CREATED).entity(res).build();
-        } catch (Exception e) {
+    public Response create(ReservationRequest request) {
+        // 1. Récupération des entités liées
+        User user = userService.findById(request.userId);
+        Event event = eventService.findById(request.eventId);
+        Venue venue = venueService.findById(request.venueId);
+
+        if (user == null || event == null || venue == null) {
             return Response.status(Response.Status.BAD_REQUEST)
-                           .entity(e.getMessage()).build();
+                    .entity("User, Event ou Venue introuvable").build();
         }
+
+        // 2. Création de la réservation
+        Reservation reservation = new Reservation();
+        reservation.setUser(user);
+        reservation.setEvent(event);
+        reservation.setVenue(venue);
+        reservation.setReservationDate(request.reservationDate);
+
+        // 3. Sauvegarde
+        reservationService.create(reservation);
+
+        return Response.status(Response.Status.CREATED).entity(reservation).build();
     }
 
     @GET
-    public Response getAllReservations() {
-        return Response.ok(reservationService.findAll()).build();
+    @Path("/{id}")
+    public Response findById(@PathParam("id") Long id) {
+        Reservation r = reservationService.findById(id);
+        if (r == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(r).build();
+    }
+
+    @GET
+    public List<Reservation> findAll() {
+        return reservationService.findAll();
     }
 }

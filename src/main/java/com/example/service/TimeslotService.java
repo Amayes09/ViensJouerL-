@@ -1,27 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Timeslot;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class TimeslotService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Timeslot createTimeslot(Timeslot timeslot) {
-        em.persist(timeslot);
-        return timeslot;
+    public void create(Timeslot timeslot) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(timeslot);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     public Timeslot findById(Long id) {
-        return em.find(Timeslot.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Timeslot.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<Timeslot> findAll() {
-        return em.createQuery("SELECT t FROM Timeslot t", Timeslot.class).getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT t FROM Timeslot t", Timeslot.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

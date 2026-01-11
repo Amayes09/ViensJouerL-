@@ -1,27 +1,46 @@
 package com.example.service;
 
 import com.example.domain.Venue;
-import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
 public class VenueService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Venue createVenue(Venue venue) {
-        em.persist(venue);
-        return venue;
+    public void create(Venue venue) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(venue);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Venue findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Venue.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<Venue> findAll() {
-        return em.createQuery("SELECT v FROM Venue v", Venue.class).getResultList();
-    }
-    
-    public Venue findById(Long id) {
-        return em.find(Venue.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT v FROM Venue v", Venue.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }
