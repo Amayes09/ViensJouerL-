@@ -6,6 +6,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Stateless
 public class PaymentService {
@@ -23,11 +24,19 @@ public class PaymentService {
         payment.setReservation(reservation);
         payment.setAmount(amount);
         payment.setMethod(method);
-        
+
         // Simulation du traitement métier
-        payment.processPayment(); 
+        payment.processPayment();
 
         em.persist(payment);
         return payment;
+    }
+
+    public Payment findById(Long id) {
+        return em.find(Payment.class, id);
+    }
+
+    public List<Payment> findAll() {
+        return em.createQuery("SELECT p FROM Payment p", Payment.class).getResultList();
     }
 }

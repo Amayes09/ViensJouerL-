@@ -14,14 +14,14 @@ public class UserService {
     @PersistenceContext
     private EntityManager em;
 
-    @Inject
-    private UserCreatedProducer producer;
+    // @Inject
+    // private UserCreatedProducer producer;
 
     public User register(User user) {
         // Ici, on pourrait hacher le mot de passe avant de sauvegarder
         em.persist(user);
         // Envoi de la notification JMS
-        producer.sendUserCreatedEvent(user);
+        // producer.sendUserCreatedEvent(user);
         return user;
     }
 

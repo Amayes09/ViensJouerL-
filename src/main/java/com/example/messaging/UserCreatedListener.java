@@ -5,12 +5,12 @@ import jakarta.ejb.MessageDriven;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
-@MessageDriven(
-        activationConfig = {
-                @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/UserCreatedQueue"),
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue")
-        }
-)
+// @MessageDriven(
+//         activationConfig = {
+//                 @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/UserCreatedQueue"),
+//                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue")
+//         }
+// )
 public class UserCreatedListener implements MessageListener {
 
     @Override

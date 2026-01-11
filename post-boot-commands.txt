@@ -1,0 +1,5 @@
+# 1. On crée le "pool" de connexion vers le conteneur "db"
+create-jdbc-connection-pool --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --restype javax.sql.ConnectionPoolDataSource --property portNumber=5432:serverName=db:databaseName=viensjouerdb:user=postgres:password=monmotdepasse myPool
+
+# 2. On lie ce pool au nom JNDI utilisé dans votre code
+create-jdbc-resource --connectionpoolid myPool jdbc/starter

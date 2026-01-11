@@ -2,10 +2,19 @@
              version="2.2">
     <persistence-unit name="starterPU" transaction-type="JTA">
         <jta-data-source>jdbc/starter</jta-data-source>
+        
         <class>com.example.domain.User</class>
+        <class>com.example.domain.Event</class>
+        <class>com.example.domain.Venue</class>
+        <class>com.example.domain.Timeslot</class>
+        <class>com.example.domain.Reservation</class>
+        <class>com.example.domain.Payment</class>
+        <class>com.example.domain.Notification</class>
+
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
         <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 </persistence>
