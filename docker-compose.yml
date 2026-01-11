@@ -1,27 +1,34 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  # Service Base de données
+  # Base de données (Gardez votre config postgres)
   db:
     image: postgres:15
+    container_name: starter-db
+    restart: always
     environment:
-      POSTGRES_DB: viensjouerdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: monmotdepasse
+      POSTGRES_DB: viensjouerdb
     ports:
-      - "5432:5432" # Pour voir la BDD depuis votre PC si besoin
-
-  # Service Application (Votre code)
-  app:
-    image: payara/micro:6.2024.5-jdk21
-    ports:
-      - "8080:8080"
+      - "5432:5432"
     volumes:
-      # CORRECTION : On pointe vers le fichier réellement généré par Maven (starter.war)
-      - ./target/starter.war:/opt/payara/deployments/starter.war
-      # On injecte le script de configuration
-      - ./post-boot-commands.txt:/opt/payara/config/post-boot-commands.txt
-    # CORRECTION : On déploie le fichier starter.war
-    command: --postbootcommandfile /opt/payara/config/post-boot-commands.txt --deploy /opt/payara/deployments/starter.war
-    depends_on:
-      - db
+      - dbdata:/var/lib/postgresql/data
+
+  # AJOUT : Broker JMS (Artemis) indispensable pour la messagerie
+  artemis:
+    image: apache/activemq-artemis:latest
+    container_name: artemis-broker
+    environment:
+      - ARTEMIS_USERNAME=admin
+      - ARTEMIS_PASSWORD=admin
+      - ANONYMOUS_LOGIN=true
+    ports:
+      - "8161:8161"   # Console web
+      - "61616:61616" # Port JMS (utilisé par votre code Java)
+    volumes:
+      - artemisdata:/var/lib/artemis-instance
+
+volumes:
+  dbdata:
+  artemisdata:

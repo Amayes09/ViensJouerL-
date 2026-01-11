@@ -1,7 +1,9 @@
 package com.example.service;
 
 import com.example.domain.User;
+import com.example.messaging.UserCreatedProducer; // Assurez-vous d'avoir cette classe
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -12,14 +14,20 @@ public class UserService {
     @PersistenceContext
     private EntityManager em;
 
-    // @Inject
-    // private UserCreatedProducer producer;
+    // DECOMMENTER L'INJECTION
+    @Inject
+    private UserCreatedProducer producer;
 
     public User register(User user) {
-        // Ici, on pourrait hacher le mot de passe avant de sauvegarder
+        // Persistance
         em.persist(user);
-        // Envoi de la notification JMS
-        // producer.sendUserCreatedEvent(user);
+
+        // DECOMMENTER L'ENVOI JMS
+        // Cela envoie un message à Artemis quand un user est créé
+        if (producer != null) {
+            producer.sendUserCreatedEvent(user);
+        }
+
         return user;
     }
 
