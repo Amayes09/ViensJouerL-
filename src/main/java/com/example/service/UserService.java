@@ -1,9 +1,7 @@
 package com.example.service;
 
 import com.example.domain.User;
-import com.example.messaging.UserCreatedProducer;
 import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
