@@ -1,41 +1,66 @@
 package com.example.service;
 
 import com.example.domain.User;
-import com.example.messaging.UserCreatedProducer; // Assurez-vous d'avoir cette classe
-import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
+import com.example.messaging.UserCreatedProducer;
+import jakarta.inject.Inject; // Attention : utiliser javax.inject ou jakarta.inject selon version
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Stateless
+// On enlève @Stateless qui ne marche pas sans Payara
 public class UserService {
 
-    @PersistenceContext
-    private EntityManager em;
+    // On injecte la Factory au lieu de l'EntityManager direct
+    @Inject
+    private EntityManagerFactory emf;
 
-    // DECOMMENTER L'INJECTION
     @Inject
     private UserCreatedProducer producer;
 
     public User register(User user) {
-        // Persistance
-        em.persist(user);
+        // 1. Créer l'EntityManager
+        EntityManager em = emf.createEntityManager();
+        try {
+            // 2. Commencer la transaction
+            em.getTransaction().begin();
 
-        // DECOMMENTER L'ENVOI JMS
-        // Cela envoie un message à Artemis quand un user est créé
-        if (producer != null) {
-            producer.sendUserCreatedEvent(user);
+            // 3. Sauvegarder
+            em.persist(user);
+
+            // 4. Valider la transaction (Commit)
+            em.getTransaction().commit();
+
+            // Notification (Simulation)
+            if (producer != null)
+                producer.sendUserCreatedEvent(user);
+
+            return user;
+        } catch (Exception e) {
+            // En cas d'erreur, annuler
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            // 5. Toujours fermer l'EntityManager
+            em.close();
         }
-
-        return user;
     }
 
     public User findById(Long id) {
-        return em.find(User.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(User.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<User> findAll() {
-        return em.createQuery("SELECT u FROM User u", User.class).getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM User u", User.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 }
