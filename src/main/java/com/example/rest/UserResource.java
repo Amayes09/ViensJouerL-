@@ -36,4 +36,24 @@ public class UserResource {
     public List<User> getAllUsers() {
         return userService.findAll();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response updateUser(@PathParam("id") Long id, User user) {
+        User updated = userService.update(id, user);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteUser(@PathParam("id") Long id) {
+        boolean deleted = userService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
 }

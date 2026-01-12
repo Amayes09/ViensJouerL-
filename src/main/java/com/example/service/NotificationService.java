@@ -43,4 +43,47 @@ public class NotificationService {
             em.close();
         }
     }
+
+    public Notification update(Long id, Notification data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Notification existing = em.find(Notification.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setMessage(data.getMessage());
+            existing.setUser(data.getUser());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Notification existing = em.find(Notification.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

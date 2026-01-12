@@ -36,4 +36,24 @@ public class VenueResource {
     public List<Venue> findAll() {
         return venueService.findAll();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, Venue venue) {
+        Venue updated = venueService.update(id, venue);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = venueService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
 }

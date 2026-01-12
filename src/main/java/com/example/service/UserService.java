@@ -63,4 +63,49 @@ public class UserService {
             em.close();
         }
     }
+
+    public User update(Long id, User data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User existing = em.find(User.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setName(data.getName());
+            existing.setEmail(data.getEmail());
+            existing.setPassword(data.getPassword());
+            existing.setIsAdmin(data.getIsAdmin());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User existing = em.find(User.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

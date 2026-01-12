@@ -36,4 +36,24 @@ public class EventResource {
     public List<Event> findAll() {
         return eventService.findAll();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, Event event) {
+        Event updated = eventService.update(id, event);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = eventService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
 }

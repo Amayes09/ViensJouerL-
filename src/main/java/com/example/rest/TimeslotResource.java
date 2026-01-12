@@ -36,4 +36,24 @@ public class TimeslotResource {
     public List<Timeslot> findAll() {
         return timeslotService.findAll();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, Timeslot timeslot) {
+        Timeslot updated = timeslotService.update(id, timeslot);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = timeslotService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
 }

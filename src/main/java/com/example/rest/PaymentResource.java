@@ -60,4 +60,34 @@ public class PaymentResource {
     public List<Payment> findAll() {
         return paymentService.findAll();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, PaymentRequest request) {
+        Reservation reservation = reservationService.findById(request.reservationId);
+        if (reservation == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Reservation introuvable").build();
+        }
+
+        Payment payment = new Payment();
+        payment.setAmount(request.amount);
+        payment.setMethod(request.method);
+        payment.setReservation(reservation);
+        payment.processPayment();
+
+        Payment updated = paymentService.update(id, payment);
+        if (updated == null) return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = paymentService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
 }

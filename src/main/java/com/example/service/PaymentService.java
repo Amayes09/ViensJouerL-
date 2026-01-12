@@ -43,4 +43,49 @@ public class PaymentService {
             em.close();
         }
     }
+
+    public Payment update(Long id, Payment data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Payment existing = em.find(Payment.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setAmount(data.getAmount());
+            existing.setMethod(data.getMethod());
+            existing.setReservation(data.getReservation());
+            existing.setIsConfirmed(data.getIsConfirmed());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Payment existing = em.find(Payment.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }
