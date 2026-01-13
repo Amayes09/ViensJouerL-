@@ -14,6 +14,11 @@ services:
       - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   artemis:
     image: apache/activemq-artemis:latest
@@ -27,6 +32,22 @@ services:
       - "61616:61616" # Port JMS
     volumes:
       - artemisdata:/var/lib/artemis-instance
+
+  app:
+    build: .
+    container_name: jakartaee-app
+    depends_on:
+      db:
+        condition: service_healthy
+      artemis:
+        condition: service_started
+    environment:
+      - PAYARA_JVM_ARGS=-Ddatasources.res_ExampleDS.connectionAttributes=serverTimezone=UTC
+    ports:
+      - "8080:8080"
+      - "4848:4848"
+    volumes:
+      - ./target/starter.war:/opt/payara/deployments/starter.war
 
 volumes:
   dbdata:
