@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Entity
 @Table(name = "users")
@@ -22,7 +24,9 @@ public class User implements Serializable {
     private String email;
 
     @NotNull
-    private String password; // Dans un vrai projet, stocker le hash !
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+
 
     private Boolean isAdmin = false;
 
