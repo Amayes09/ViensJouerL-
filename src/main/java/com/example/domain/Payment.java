@@ -16,8 +16,8 @@ public class Payment {
     private String method; // Carte, PayPal
     private Boolean isConfirmed = false;
 
-    @OneToOne
-    @JoinColumn(name = "reservation_id")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "reservation_id", nullable = false)
     @JsonIgnore
     private Reservation reservation;
 

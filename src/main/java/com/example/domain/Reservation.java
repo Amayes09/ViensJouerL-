@@ -13,24 +13,26 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
     @JsonIgnore
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "venue_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "venue_id", nullable = false)
     @JsonIgnore
     private Venue venue;
 
-    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date reservationDate;
 
     // Getters et setters
@@ -51,4 +53,11 @@ public class Reservation {
 
     public Date getReservationDate() { return reservationDate; }
     public void setReservationDate(Date reservationDate) { this.reservationDate = reservationDate; }
+
+    @PrePersist
+    public void prePersist() {
+        if (reservationDate == null) {
+            reservationDate = new Date();
+        }
+    }
 }

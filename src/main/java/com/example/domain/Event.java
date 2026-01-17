@@ -1,6 +1,7 @@
 package com.example.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class Event implements Serializable {
     private Long id;
 
     @NotNull
+    @NotBlank
     private String title;
 
     private String description;
@@ -25,6 +27,9 @@ public class Event implements Serializable {
     private Date eventDate;
 
     private String gameType; // ex: "FPS", "MOBA"
+
+    @Column(nullable = false)
+    @jakarta.validation.constraints.Min(1)
     private Integer capacity;
 
     @JsonIgnore
