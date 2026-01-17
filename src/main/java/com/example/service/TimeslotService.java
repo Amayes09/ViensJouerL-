@@ -5,21 +5,40 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
+import com.example.domain.Venue;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import com.example.domain.Venue;
 
 public class TimeslotService {
 
     @Inject
     private EntityManagerFactory emf;
 
-    public void create(Timeslot timeslot) {
+    public Timeslot create(Timeslot timeslot) {
         EntityManager em = emf.createEntityManager();
         try {
+            if (timeslot == null) throw new BadRequestException("Timeslot manquant");
+            if (timeslot.getStart() == null || timeslot.getEndTime() == null)
+                throw new BadRequestException("start et endTime sont obligatoires");
+            if (timeslot.getVenue() == null || timeslot.getVenue().getId() == null)
+                throw new BadRequestException("venue.id est obligatoire");
+
             em.getTransaction().begin();
+
+            // Venue "managé" (très important)
+            Long venueId = timeslot.getVenue().getId();
+            Venue managedVenue = em.find(Venue.class, venueId);
+            if (managedVenue == null) throw new NotFoundException("Venue introuvable: " + venueId);
+
+            timeslot.setVenue(managedVenue);
+
             em.persist(timeslot);
             em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            return timeslot;
+
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();
@@ -53,14 +72,24 @@ public class TimeslotService {
                 em.getTransaction().rollback();
                 return null;
             }
+
             existing.setStart(data.getStart());
             existing.setEndTime(data.getEndTime());
             existing.setReserved(data.isReserved());
+
+            if (data.getVenue() != null && data.getVenue().getId() != null) {
+                Venue managedVenue = em.find(Venue.class, data.getVenue().getId());
+                if (managedVenue == null) {
+                    em.getTransaction().rollback();
+                    return null; // ou NotFoundException
+                }
+                existing.setVenue(managedVenue);
+            }
+
             em.getTransaction().commit();
             return existing;
         } catch (Exception e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();

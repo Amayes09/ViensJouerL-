@@ -31,6 +31,11 @@ public class Venue implements Serializable {
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Timeslot> timeslots = new ArrayList<>();
+
+
     public Venue() {}
 
     // Getters et Setters (existants)
@@ -66,5 +71,23 @@ public class Venue implements Serializable {
     public void removeReservation(Reservation reservation) {
         reservations.remove(reservation);
         reservation.setVenue(null);
+    }
+
+    public List<Timeslot> getTimeslots() {
+        return timeslots;
+    }
+
+    public void setTimeslots(List<Timeslot> timeslots) {
+        this.timeslots = timeslots;
+    }
+
+    public void addTimeslot(Timeslot timeslot) {
+        timeslots.add(timeslot);
+        timeslot.setVenue(this);
+    }
+
+    public void removeTimeslot(Timeslot timeslot) {
+        timeslots.remove(timeslot);
+        timeslot.setVenue(null);
     }
 }

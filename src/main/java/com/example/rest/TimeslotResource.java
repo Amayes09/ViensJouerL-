@@ -18,8 +18,8 @@ public class TimeslotResource {
 
     @POST
     public Response create(Timeslot timeslot) {
-        timeslotService.create(timeslot);
-        return Response.status(Response.Status.CREATED).entity(timeslot).build();
+        Timeslot created = timeslotService.create(timeslot);
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @GET
