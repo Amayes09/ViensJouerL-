@@ -76,6 +76,8 @@ public class JmsUserCreatedConsumer {
 
             System.out.println("📥 [REÇU] UserCreated id=" + userId + " email=" + email);
 
+            System.out.println("Rechargement de l'utilisateur depuis la base (userId=" + userId + ")");
+
             // ✅ Persist en base (Consumer -> JPA)
             notificationService.createNotification(userId, "Création du compte utilisateur : " + email);
 

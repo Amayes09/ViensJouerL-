@@ -61,7 +61,7 @@ public class Main {
                 bindAsContract(ReservationService.class);
                 bindAsContract(PaymentService.class);
                 bindAsContract(TimeslotService.class);
-                bindAsContract(NotificationService.class);
+                bind(notificationService).to(NotificationService.class);
             }
         });
 

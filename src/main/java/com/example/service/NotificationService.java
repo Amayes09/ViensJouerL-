@@ -99,6 +99,7 @@ public class NotificationService {
                 System.out.println("⚠️ Notification non créée : userId=" + userId + " introuvable");
                 return;
             }
+            System.out.println("✅ utilisateur rechargé en base → email=" + managedUser.getEmail());
 
             Notification notification = new Notification(message, managedUser);
             em.persist(notification);
@@ -115,8 +116,5 @@ public class NotificationService {
     public void setEmf(EntityManagerFactory emf) {
         this.emf = emf;
     }
-
-
-
 
 }
