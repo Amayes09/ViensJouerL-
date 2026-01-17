@@ -1,7 +1,9 @@
 package com.example.domain;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,22 +19,44 @@ public class Venue implements Serializable {
     private Integer capacity;
     private Boolean isAvailable = true;
 
-    // Utile pour éviter les boucles infinies JSON si on renvoie l'entité directement
-    // (Idéalement, utilisez des DTOs)
-    @OneToMany(mappedBy = "venue")
-    private List<Reservation> reservations;
+    @JsonIgnore
+    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
 
     public Venue() {}
 
-    // Getters et Setters...
+    // Getters et Setters (existants)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
+
     public Boolean getIsAvailable() { return isAvailable; }
     public void setIsAvailable(Boolean available) { isAvailable = available; }
+
+    // ✅ Ajouts demandés (3.A)
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public void addReservation(Reservation reservation) {
+        reservations.add(reservation);
+        reservation.setVenue(this);
+    }
+
+    public void removeReservation(Reservation reservation) {
+        reservations.remove(reservation);
+        reservation.setVenue(null);
+    }
 }

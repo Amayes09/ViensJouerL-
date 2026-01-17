@@ -2,6 +2,7 @@ package com.example.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "payments")
@@ -17,6 +18,7 @@ public class Payment {
 
     @OneToOne
     @JoinColumn(name = "reservation_id")
+    @JsonIgnore
     private Reservation reservation;
 
     public void processPayment() {

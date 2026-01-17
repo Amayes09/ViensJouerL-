@@ -2,7 +2,7 @@ package com.example.domain;
 
 import com.example.domain.User;
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 @Entity
@@ -15,14 +15,17 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private com.example.domain.User user;
+    @JsonIgnore
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
+    @JsonIgnore
     private Event event;
 
     @ManyToOne
     @JoinColumn(name = "venue_id")
+    @JsonIgnore
     private Venue venue;
 
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
@@ -34,7 +37,7 @@ public class Reservation {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public com.example.domain.User getUser() { return user; }
+    public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
     public Event getEvent() { return event; }
