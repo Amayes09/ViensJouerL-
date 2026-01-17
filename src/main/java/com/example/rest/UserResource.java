@@ -7,6 +7,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import jakarta.validation.Valid;
+
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -17,7 +19,7 @@ public class UserResource {
     private UserService userService;
 
     @POST
-    public Response createUser(User user) {
+    public Response createUser(@Valid User user) {
         User created = userService.register(user);
         return Response.status(Response.Status.CREATED).entity(created).build();
     }
