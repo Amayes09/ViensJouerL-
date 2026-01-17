@@ -3,6 +3,7 @@ package com.example;
 import com.example.messaging.JmsUserCreatedConsumer;
 import com.example.messaging.UserCreatedProducer;
 import com.example.service.*;
+import com.example.service.NotificationService;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Queue;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,13 +31,16 @@ public class Main {
         Queue userQueue = new ActiveMQQueue("UserCreatedQueue");
 
         // 3) Démarrage du consommateur JMS (INDISCUTABLE)
-        JmsUserCreatedConsumer consumer = new JmsUserCreatedConsumer(jmsFactory, userQueue);
+        // 3) Démarrage du consommateur JMS avec traitement libre (Consumer -> JPA)
+        NotificationService notificationService = new NotificationService();
+        notificationService.setEmf(emf); // ✅ indispensable en standalone
+
+        JmsUserCreatedConsumer consumer = new JmsUserCreatedConsumer(jmsFactory, userQueue, notificationService);
         consumer.start();
+
 
         // 4) Jersey / Grizzly
         final ResourceConfig rc = new ResourceConfig().packages("com.example");
-        rc.register(com.example.rest.PersistenceExceptionMapper.class);
-
 
         // Injection HK2 pour tes Services + Producer (comme avant)
         rc.register(new AbstractBinder() {

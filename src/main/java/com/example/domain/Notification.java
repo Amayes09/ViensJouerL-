@@ -1,6 +1,7 @@
 package com.example.domain;
 
 import com.example.domain.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.Instant;
 
@@ -13,12 +14,29 @@ public class Notification {
     private Long id;
 
     private String message;
+
+    @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) createdAt = Instant.now();
+    }
+
     // !!!!! jointure ici absente sur le schéma
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private com.example.domain.User user;
+    @ManyToOne(optional = false) // recommandé
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public Notification() {}
+
+    public Notification(String message, User user) {
+        this.message = message;
+        this.user = user;
+        this.createdAt = Instant.now();
+    }
+
 
     // Getters et setters
     public Long getId() { return id; }
