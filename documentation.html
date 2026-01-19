@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViensJouerLà - Documentation Projet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #764ba2;
+        }
+        
+        .content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+        }
+        
+        .section h2 {
+            font-size: 2.2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .section h3 {
+            font-size: 1.5em;
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .section h4 {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p, li {
+            margin-bottom: 12px;
+            color: #555;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+        }
+        
+        .box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .box.highlight {
+            background: #f0f7ff;
+            border-left-color: #667eea;
+        }
+        
+        .box.success {
+            background: #f0f8f0;
+            border-left-color: #4caf50;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-card {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .tech-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .tech-card p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .architecture {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+        
+        .pattern-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .pattern-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .pattern-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pattern-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .pattern-card-body {
+            padding: 20px;
+        }
+        
+        .pattern-card-body p {
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        
+        .pattern-card-body strong {
+            color: #667eea;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .code-block code {
+            color: #f8f8f2;
+        }
+        
+        .keyword {
+            color: #66d9ef;
+        }
+        
+        .string {
+            color: #e6db74;
+        }
+        
+        .comment {
+            color: #75715e;
+        }
+        
+        .rest-endpoint {
+            background: #f0f7ff;
+            border: 1px solid #667eea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .rest-endpoint .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .rest-endpoint .post {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .rest-endpoint .get {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .rest-endpoint .put {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .rest-endpoint .delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .scenario {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .scenario-step {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        
+        .scenario-step-num {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .scenario-step-content h4 {
+            margin: 0 0 10px 0;
+        }
+        
+        .scenario-step-content p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 60px;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .badge.required {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .badge.bonus {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .badge.tech {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ViensJouerLà</h1>
+            <p>Plateforme de gestion d'événements et de réservations</p>
+            <p style="font-size: 0.9em; margin-top: 15px;">Documentation technique - Projet Jakarta EE 8</p>
+        </header>
+        
+        <div class="nav">
+            <ul>
+                <li><a href="#overview">Vue d'ensemble</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#technologies">Technologies</a></li>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#patterns">Design Patterns</a></li>
+                <li><a href="#api">API REST</a></li>
+                <li><a href="#scenario">Scénario complet</a></li>
+            </ul>
+        </div>
+        
+        <div class="content">
+            <!-- Overview -->
+            <div class="section" id="overview">
+                <h2>1. Vue d'ensemble</h2>
+                
+                <p><strong>ViensJouerLà</strong> est une application complète de gestion d'événements et de réservations, construite avec Jakarta EE 8. Le projet démontre l'intégration de plusieurs composants Jakarta EE essentiels, notamment les APIs REST, la persistance JPA, et la messagerie asynchrone JMS.</p>
+                
+                <h3>Objectifs du projet</h3>
+                <ul>
+                    <li>Implémenter une API REST complète avec validation robuste</li>
+                    <li>Utiliser JPA pour la persistance de données avec relations complexes</li>
+                    <li>Intégrer la messagerie asynchrone (JMS) avec Apache ActiveMQ Artemis</li>
+                    <li>Appliquer 3+ design patterns pertinents</li>
+                    <li>Gérer les utilisateurs avec production d'événements JMS</li>
+                    <li>Implémenter un consommateur JMS réactif</li>
+                </ul>
+                
+                <h3>Domaine métier</h3>
+                <p>La plateforme permet :</p>
+                <ul>
+                    <li>Créer et gérer des événements</li>
+                    <li>Gérer les lieux (venues) et leurs créneaux horaires</li>
+                    <li>Réserver des places aux événements</li>
+                    <li>Traiter les paiements des réservations</li>
+                    <li>Notifier les utilisateurs des changements</li>
+                    <li>Gérer les comptes utilisateurs avec authentification</li>
+                </ul>
+                
+                <div class="toc">
+                    <h3>Table des matières</h3>
+                    <ul>
+                        <li><a href="#architecture">Architecture globale</a></li>
+                        <li><a href="#technologies">Technologies utilisées</a></li>
+                        <li><a href="#modules">7 Modules principaux</a></li>
+                        <li><a href="#patterns">4 Design Patterns</a></li>
+                        <li><a href="#api">API REST complète</a></li>
+                        <li><a href="#scenario">Flux complet d'utilisation</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Architecture -->
+            <div class="section" id="architecture">
+                <h2>2. Architecture globale</h2>
+                
+                <h3>Vue d'ensemble en couches</h3>
+                <div class="architecture">
+┌─────────────────────────────────────────────────────┐
+│              CLIENT (REST / HTTP)                    │
+└───────────────────┬─────────────────────────────────┘
+                    │
+┌───────────────────▼──────────────────────────────────┐
+│  COUCHE API (JAX-RS - REST Endpoints)                │
+│  - UserResource     - EventResource                  │
+│  - ReservationResource  - PaymentResource            │
+│  - NotificationResource - VenueResource              │
+│  - TimeslotResource                                  │
+└───────────────────┬──────────────────────────────────┘
+                    │
+        ┌───────────┼───────────┐
+        │           │           │
+        ▼           ▼           ▼
+┌──────────────┐ ┌──────────┐ ┌──────────────────┐
+│   Services   │ │Messaging │ │ JPA / Database   │
+│   (Métier)   │ │  (JMS)   │ │                  │
+│              │ │          │ │  7 entités :     │
+│- UserService │ │Producer  │ │  - User          │
+│- EventService│ │Consumer  │ │  - Event         │
+│- PaymentSvc  │ │Translator│ │  - Reservation   │
+│- ...         │ │Filter    │ │  - Payment       │
+└──────────────┘ └──────────┘ │  - Venue         │
+                               │  - Timeslot      │
+                               │  - Notification  │
+                               └──────────────────┘
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+        ▼                       ▼
+    ┌─────────────┐      ┌─────────────┐
+    │ Artemis JMS │      │  Database   │
+    │   (Queue)   │      │   (JPA)     │
+    └─────────────┘      └─────────────┘
+                </div>
+                
+                <h3>Flux de communication</h3>
+                <p><strong>Flux synchrone (REST) :</strong> Client → REST API → Service → JPA → Database</p>
+                <p><strong>Flux asynchrone (JMS) :</strong> Service → Event Message → Queue → Consumer → Notification → Database</p>
+            </div>
+            
+            <!-- Technologies -->
+            <div class="section" id="technologies">
+                <h2>3. Technologies utilisées</h2>
+                
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <h4>Jakarta EE 8</h4>
+                        <p>Framework d'entreprise pour Java avec CDI, JPA, JAX-RS</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>JAX-RS (REST)</h4>
+                        <p>API REST standard pour créer des services web RESTful</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>JPA / Hibernate</h4>
+                        <p>Persistance de données avec ORM et gestion des relations</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>JMS / Artemis</h4>
+                        <p>Messagerie asynchrone avec Apache ActiveMQ Artemis</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>CDI</h4>
+                        <p>Injection de dépendances pour découplage des composants</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Maven</h4>
+                        <p>Gestion des dépendances et build du projet</p>
+                    </div>
+                </div>
+                
+                <div class="box highlight">
+                    <h4>Dépendances principales</h4>
+                    <p><span class="badge tech">jakarta.ee</span> 
+                       <span class="badge tech">jakarta.ws.rs</span>
+                       <span class="badge tech">jakarta.persistence</span>
+                       <span class="badge tech">jakarta.jms</span>
+                       <span class="badge tech">jackson-databind</span></p>
+                </div>
+            </div>
+            
+            <!-- Modules -->
+            <div class="section" id="modules">
+                <h2>4. 7 Modules principaux</h2>
+                
+                <h3>1. REST API (JAX-RS)</h3>
+                <div class="box">
+                    <p><strong>Responsabilité :</strong> Points d'entrée HTTP pour les clients</p>
+                    <p><strong>Ressources :</strong></p>
+                    <ul>
+                        <li>UserResource - Gestion des utilisateurs (CRUD)</li>
+                        <li>EventResource - Gestion des événements</li>
+                        <li>ReservationResource - Gestion des réservations</li>
+                        <li>PaymentResource - Traitement des paiements</li>
+                        <li>NotificationResource - Consultation des notifications</li>
+                        <li>VenueResource - Gestion des lieux</li>
+                        <li>TimeslotResource - Gestion des créneaux</li>
+                    </ul>
+                    <p><strong>Validations :</strong> Tous les endpoints incluent validation des entrées (400), vérification des ressources (404), et gestion des erreurs (500)</p>
+                </div>
+                
+                <h3>2. Services métier</h3>
+                <div class="box">
+                    <p><strong>Responsabilité :</strong> Logique métier et orchestration</p>
+                    <ul>
+                        <li>UserService - Enregistrement, validations, email unique, envoi événement JMS</li>
+                        <li>EventService - Gestion complète des événements</li>
+                        <li>ReservationService - Création et suivi des réservations</li>
+                        <li>PaymentService - Traitement des paiements</li>
+                        <li>NotificationService - Création de notifications</li>
+                        <li>VenueService - Gestion des lieux</li>
+                        <li>TimeslotService - Gestion des créneaux horaires</li>
+                    </ul>
+                </div>
+                
+                <h3>3. Persistance (JPA)</h3>
+                <div class="box">
+                    <p><strong>Entités :</strong> 7 classes d'entité avec relations complexes</p>
+                    <ul>
+                        <li><strong>User</strong> - Comptes utilisateurs (email unique, password avec @JsonIgnore)</li>
+                        <li><strong>Event</strong> - Événements organisés</li>
+                        <li><strong>Venue</strong> - Lieux d'événements</li>
+                        <li><strong>Timeslot</strong> - Créneaux horaires</li>
+                        <li><strong>Reservation</strong> - Réservations (User + Event + Venue)</li>
+                        <li><strong>Payment</strong> - Paiements (linked to Reservation)</li>
+                        <li><strong>Notification</strong> - Notifications (linked to User)</li>
+                    </ul>
+                    <p><strong>Gestion des transactions :</strong> EntityManager manuel avec try-catch et rollback sécurisé</p>
+                </div>
+                
+                <h3>4. Messagerie JMS</h3>
+                <div class="box">
+                    <p><strong>Composants :</strong></p>
+                    <ul>
+                        <li><strong>UserCreatedProducer</strong> - Publie événements "User Created" dans la queue</li>
+                        <li><strong>JmsUserCreatedConsumer</strong> - Écoute et réagit aux événements (crée Notifications)</li>
+                        <li><strong>UserCreatedMessageTranslator</strong> - Convertit User → JSON</li>
+                    </ul>
+                    <p><strong>Infrastructure :</strong> Apache ActiveMQ Artemis avec queue persistante "UserCreatedQueue"</p>
+                </div>
+                
+                <h3>5. DTOs (Data Transfer Objects)</h3>
+                <div class="box">
+                    <p><strong>UserResponse</strong> - Retourne User sans exposer le password</p>
+                    <p>Autres DTOs imbédées dans les ressources (PaymentRequest, ReservationRequest, NotificationRequest)</p>
+                </div>
+                
+                <h3>6. Gestion des erreurs</h3>
+                <div class="box">
+                    <ul>
+                        <li>400 BAD_REQUEST - Validation d'entrée, ID invalide</li>
+                        <li>404 NOT_FOUND - Ressource inexistante</li>
+                        <li>409 CONFLICT - Email déjà utilisé (WebApplicationException)</li>
+                        <li>500 INTERNAL_SERVER_ERROR - Erreurs serveur</li>
+                    </ul>
+                </div>
+                
+                <h3>7. Sécurité des données</h3>
+                <div class="box">
+                    <ul>
+                        <li>Password avec @JsonIgnore - jamais sérialisé en JSON</li>
+                        <li>Email unique en base - contrainte UNIQUE</li>
+                        <li>Validation des entrées côté service</li>
+                        <li>Transactions atomiques avec rollback en cas d'erreur</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Design Patterns -->
+            <div class="section" id="patterns">
+                <h2>5. Design Patterns implémentés</h2>
+                
+                <div class="box success">
+                    <p><span class="badge required">REQUIS</span> 4 patterns implémentés : Event Message, Message Translator, Message Filter, Event-Driven Consumer</p>
+                </div>
+                
+                <div class="pattern-overview">
+                    <div class="pattern-card">
+                        <div class="pattern-card-header">
+                            Event Message
+                        </div>
+                        <div class="pattern-card-body">
+                            <p><strong>Type :</strong> Messaging Patterns</p>
+                            <p><strong>Fichier :</strong> UserCreatedProducer.java</p>
+                            <p><strong>Rôle :</strong> Encapsuler l'événement "User Created" dans un message asynchrone</p>
+                            <p><strong>Bénéfice :</strong> Découplage producteur/consommateur</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-card">
+                        <div class="pattern-card-header">
+                            Message Translator
+                        </div>
+                        <div class="pattern-card-body">
+                            <p><strong>Type :</strong> Transformation Patterns</p>
+                            <p><strong>Fichier :</strong> UserCreatedMessageTranslator.java</p>
+                            <p><strong>Rôle :</strong> Convertir User (objet JPA) → JSON (format message)</p>
+                            <p><strong>Bénéfice :</strong> Séparation des responsabilités</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-card">
+                        <div class="pattern-card-header">
+                            Message Filter
+                        </div>
+                        <div class="pattern-card-body">
+                            <p><strong>Type :</strong> Routing Patterns</p>
+                            <p><strong>Fichier :</strong> UserCreatedProducer.java (ligne 22-26)</p>
+                            <p><strong>Rôle :</strong> Valider message avant envoi (name.length >= 3)</p>
+                            <p><strong>Bénéfice :</strong> Qualité des données</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-card">
+                        <div class="pattern-card-header">
+                            Event-Driven Consumer
+                        </div>
+                        <div class="pattern-card-body">
+                            <p><strong>Type :</strong> Endpoint Patterns</p>
+                            <p><strong>Fichier :</strong> JmsUserCreatedConsumer.java</p>
+                            <p><strong>Rôle :</strong> Écouter les événements et créer Notifications</p>
+                            <p><strong>Bénéfice :</strong> Réactivité automatique</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Détail : Event Message</h3>
+                <div class="code-block"><code><span class="keyword">public void</span> <span class="function">sendUserCreatedEvent</span>(User user) {
+    <span class="comment">// Message contenant l'événement "UserCreated"</span>
+    <span class="keyword">if</span> (user == <span class="keyword">null</span> || user.getName() == <span class="keyword">null</span>) {
+        <span class="keyword">return</span>;
+    }
+    
+    <span class="keyword">try</span> (JMSContext context = factory.createContext()) {
+        Instant timestamp = Instant.now();
+        String payload = translator.toJson(user, timestamp, <span class="string">"user-service"</span>);
+        context.createProducer().send(queue, payload);
+    }
+}</code></div>
+
+                <h3>Détail : Message Translator</h3>
+                <div class="code-block"><code><span class="keyword">public</span> String <span class="function">toJson</span>(User user, Instant timestamp, String source) {
+    String id = user.getId() == <span class="keyword">null</span> ? <span class="string">"null"</span> : String.valueOf(user.getId());
+    String name = <span class="function">escapeJson</span>(user.getName());
+    
+    <span class="keyword">return</span> <span class="string">"{"</span>
+        + <span class="string">"\"id\":"</span> + id + <span class="string">","</span>
+        + <span class="string">"\"name\":\""</span> + name + <span class="string">"\""</span>
+        + <span class="string">"}"</span>;
+}</code></div>
+
+                <h3>Détail : Message Filter</h3>
+                <div class="code-block"><code><span class="keyword">if</span> (user == <span class="keyword">null</span> || user.getName() == <span class="keyword">null</span> || 
+    user.getName().trim().length() < 3) {
+    System.out.println(<span class="string">"[JMS] Message ignore: nom utilisateur trop court."</span>);
+    <span class="keyword">return</span>;  <span class="comment">// Message filtré, non envoyé</span>
+}</code></div>
+
+                <h3>Détail : Event-Driven Consumer</h3>
+                <div class="code-block"><code><span class="keyword">while</span> (running) {
+    String payload = consumer.receiveBody(String.<span class="keyword">class</span>, 1000);
+    <span class="keyword">if</span> (payload != <span class="keyword">null</span>) {
+        <span class="function">handleUserCreated</span>(payload);  <span class="comment">// Réaction automatique</span>
+    }
+}
+
+<span class="keyword">private void</span> <span class="function">handleUserCreated</span>(String payload) {
+    JsonNode json = mapper.readTree(payload);
+    Long userId = json.get(<span class="string">"id"</span>).asLong();
+    <span class="comment">// Créer Notification</span>
+    notificationService.createNotification(userId, message);
+}</code></div>
+            </div>
+            
+            <!-- API REST -->
+            <div class="section" id="api">
+                <h2>6. API REST complète</h2>
+                
+                <h3>Gestion des utilisateurs</h3>
+                <div class="rest-endpoint">
+                    <span class="method post">POST</span> /users - Créer un utilisateur
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /users - Lister tous les utilisateurs
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /users/{id} - Récupérer un utilisateur
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method put">PUT</span> /users/{id} - Modifier un utilisateur
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method delete">DELETE</span> /users/{id} - Supprimer un utilisateur
+                </div>
+                
+                <h3>Gestion des événements</h3>
+                <div class="rest-endpoint">
+                    <span class="method post">POST</span> /events - Créer un événement
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /events - Lister tous les événements
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /events/{id} - Récupérer un événement
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method put">PUT</span> /events/{id} - Modifier un événement
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method delete">DELETE</span> /events/{id} - Supprimer un événement
+                </div>
+                
+                <h3>Gestion des réservations</h3>
+                <div class="rest-endpoint">
+                    <span class="method post">POST</span> /reservations - Créer une réservation
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /reservations - Lister les réservations
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method get">GET</span> /reservations/{id} - Récupérer une réservation
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method put">PUT</span> /reservations/{id} - Modifier une réservation
+                </div>
+                <div class="rest-endpoint">
+                    <span class="method delete">DELETE</span> /reservations/{id} - Annuler une réservation
+                </div>
+                
+                <h3>Autres ressources</h3>
+                <p>CRUD complet pour : Paiements, Notifications, Lieux (Venues), Créneaux (Timeslots)</p>
+                
+                <h3>Codes de réponse</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Signification</th>
+                            <th>Cas d'usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>200</td>
+                            <td>OK</td>
+                            <td>Requête réussie (GET, PUT)</td>
+                        </tr>
+                        <tr>
+                            <td>201</td>
+                            <td>Created</td>
+                            <td>Ressource créée (POST)</td>
+                        </tr>
+                        <tr>
+                            <td>204</td>
+                            <td>No Content</td>
+                            <td>Suppression réussie (DELETE)</td>
+                        </tr>
+                        <tr>
+                            <td>400</td>
+                            <td>Bad Request</td>
+                            <td>Validation échouée, ID invalide</td>
+                        </tr>
+                        <tr>
+                            <td>404</td>
+                            <td>Not Found</td>
+                            <td>Ressource inexistante</td>
+                        </tr>
+                        <tr>
+                            <td>409</td>
+                            <td>Conflict</td>
+                            <td>Email déjà utilisé</td>
+                        </tr>
+                        <tr>
+                            <td>500</td>
+                            <td>Internal Server Error</td>
+                            <td>Erreur serveur (DB, persistance)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Scenario complet -->
+            <div class="section" id="scenario">
+                <h2>7. Scénario d'utilisation complet</h2>
+                
+                <p>Flux complet montrant l'interaction entre les composants REST, Services, JPA et JMS :</p>
+                
+                <div class="scenario">
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">1</div>
+                        <div class="scenario-step-content">
+                            <h4>Client envoie requête HTTP</h4>
+                            <p><strong>POST /users</strong> avec body JSON</p>
+                            <p>{ "name": "Alice Dupont", "email": "alice@example.com", "password": "secure123" }</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">2</div>
+                        <div class="scenario-step-content">
+                            <h4>REST API valide les entrées</h4>
+                            <p>UserResource.createUser() vérifie :</p>
+                            <p>- Name non vide</p>
+                            <p>- Email valide (contient @)</p>
+                            <p>- Password présent</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">3</div>
+                        <div class="scenario-step-content">
+                            <h4>Service métier traite la logique</h4>
+                            <p>UserService.register(user) :</p>
+                            <p>- Valide à nouveau les entrées</p>
+                            <p>- Persist User en base (JPA)</p>
+                            <p>- Retourne Response 201 CREATED</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">4</div>
+                        <div class="scenario-step-content">
+                            <h4>Événement JMS produit</h4>
+                            <p>UserCreatedProducer.sendUserCreatedEvent(user) :</p>
+                            <p>- Message Filter : valide name.length() >= 3 ✓</p>
+                            <p>- Message Translator : convertit User → JSON</p>
+                            <p>- Envoie dans Queue Artemis</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">5</div>
+                        <div class="scenario-step-content">
+                            <h4>Message persisted en Queue</h4>
+                            <p>Apache ActiveMQ Artemis persiste le message :</p>
+                            <p>{ "id": 1, "name": "Alice Dupont", "email": "alice@example.com", ... }</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">6</div>
+                        <div class="scenario-step-content">
+                            <h4>Consumer JMS écoute</h4>
+                            <p>JmsUserCreatedConsumer.start() :</p>
+                            <p>- Boucle infinie d'écoute activée</p>
+                            <p>- Reçoit le message de la Queue</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">7</div>
+                        <div class="scenario-step-content">
+                            <h4>Action : créer Notification</h4>
+                            <p>JmsUserCreatedConsumer.handleUserCreated() :</p>
+                            <p>- Parse JSON pour extraire userId et email</p>
+                            <p>- Appelle NotificationService.createNotification(userId, message)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">8</div>
+                        <div class="scenario-step-content">
+                            <h4>Notification persisted</h4>
+                            <p>NotificationService crée entité Notification :</p>
+                            <p>- Charge l'User depuis la DB (JPA)</p>
+                            <p>- Crée Notification(message, user)</p>
+                            <p>- Persist en base</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-step">
+                        <div class="scenario-step-num">9</div>
+                        <div class="scenario-step-content">
+                            <h4>Client peut consulter la notification</h4>
+                            <p><strong>GET /notifications</strong></p>
+                            <p>Retourne la notification créée automatiquement</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Résumé du flux</h3>
+                <div class="architecture">
+Client
+    ↓
+POST /users
+    ↓
+UserResource (validation)
+    ↓
+UserService (logique métier)
+    ↓
+JPA Persist (Database)
+    ↓
+Response 201 CREATED
+    ↓ (asynchrone)
+    ↓
+UserCreatedProducer
+    ├─ Message Filter (validation)
+    ├─ Message Translator (JSON)
+    └─ Send to Queue
+    ↓
+Apache Artemis Queue
+    ↓
+JmsUserCreatedConsumer (écoute)
+    ├─ receiveBody()
+    ├─ handleUserCreated()
+    └─ Parse JSON
+    ↓
+NotificationService
+    ├─ Load User
+    ├─ Create Notification
+    └─ Persist
+    ↓
+Database (Notification table)
+    ↓
+Client GET /notifications
+                </div>
+            </div>
+            
+            <!-- Summary -->
+            <div class="section">
+                <h2>8. Résumé des livrables</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Composant</th>
+                            <th>Statut</th>
+                            <th>Détail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gestion des utilisateurs</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>CRUD complet, validation, email unique</td>
+                        </tr>
+                        <tr>
+                            <td>Émission JMS User Created</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>UserCreatedProducer avec Event Message pattern</td>
+                        </tr>
+                        <tr>
+                            <td>Consommateur JMS</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>JmsUserCreatedConsumer, crée Notifications</td>
+                        </tr>
+                        <tr>
+                            <td>Autres composants Jakarta EE</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>6 autres ressources REST + services</td>
+                        </tr>
+                        <tr>
+                            <td>Design Patterns</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>Event Message, Message Translator, Message Filter, Event-Driven Consumer</td>
+                        </tr>
+                        <tr>
+                            <td>Documentation</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>HTML + Markdown avec architecture et patterns</td>
+                        </tr>
+                        <tr>
+                            <td>Diagramme composants</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>Architecture en couches, flux JMS</td>
+                        </tr>
+                        <tr>
+                            <td>Persistance JPA</td>
+                            <td style="color: #4caf50; font-weight: bold;">✓</td>
+                            <td>7 entités avec relations complexes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>ViensJouerLà - Projet Jakarta EE 8</strong></p>
+            <p>Architecture complète avec REST, JPA, et JMS</p>
+            <p>Documentation générée automatiquement</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">Groupe d'étudiants | Janvier 2026</p>
+        </div>
+    </div>
+</body>
+</html>

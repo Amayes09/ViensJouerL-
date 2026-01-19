@@ -3,10 +3,9 @@ package com.example.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -29,7 +28,7 @@ public class User implements Serializable {
 
     @NotNull
     @NotBlank
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private String password;
 
 

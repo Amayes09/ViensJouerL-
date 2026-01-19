@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
+/**
+ * ✅ Timeslot avec relation à Venue pour cohérence du modèle
+ * Un créneau horaire appartient toujours à une venue
+ */
 @Entity
 @Table(name = "timeslots")
 public class Timeslot {
@@ -30,6 +34,13 @@ public class Timeslot {
     private Venue venue;
 
     public Timeslot() {}
+
+    public Timeslot(Date start, Date endTime, Venue venue) {
+        this.start = start;
+        this.endTime = endTime;
+        this.venue = venue;
+        this.isReserved = false;
+    }
 
     // Getters / setters
     public Long getId() { return id; }

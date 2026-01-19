@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Path("/reservations")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,7 +25,6 @@ public class ReservationResource {
     @Inject
     private ReservationService reservationService;
 
-    // On injecte les autres services pour retrouver les liens
     @Inject
     private UserService userService;
     @Inject
@@ -32,7 +32,6 @@ public class ReservationResource {
     @Inject
     private VenueService venueService;
 
-    // DTO pour la requête
     public static class ReservationRequest {
         public Long userId;
         public Long eventId;
@@ -42,75 +41,125 @@ public class ReservationResource {
 
     @POST
     public Response create(ReservationRequest request) {
-        // 1. Récupération des entités liées
-        User user = userService.findById(request.userId);
-        Event event = eventService.findById(request.eventId);
-        Venue venue = venueService.findById(request.venueId);
+        try {
+            if (request == null || request.userId == null || request.eventId == null || request.venueId == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "userId, eventId et venueId obligatoires"))
+                        .build();
+            }
 
-        if (user == null || event == null || venue == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("User, Event ou Venue introuvable").build();
+            User user = userService.findById(request.userId);
+            Event event = eventService.findById(request.eventId);
+            Venue venue = venueService.findById(request.venueId);
+
+            if (user == null || event == null || venue == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "User, Event ou Venue introuvable"))
+                        .build();
+            }
+
+            Reservation reservation = new Reservation();
+            reservation.setUser(user);
+            reservation.setEvent(event);
+            reservation.setVenue(venue);
+            reservation.setReservationDate(request.reservationDate);
+
+            reservationService.create(reservation);
+            return Response.status(Response.Status.CREATED).entity(reservation).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
         }
-
-        // 2. Création de la réservation
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setEvent(event);
-        reservation.setVenue(venue);
-        reservation.setReservationDate(request.reservationDate);
-
-        // 3. Sauvegarde
-        reservationService.create(reservation);
-
-        return Response.status(Response.Status.CREATED).entity(reservation).build();
     }
 
     @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
-        Reservation r = reservationService.findById(id);
-        if (r == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
-        return Response.ok(r).build();
+        if (id == null || id <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "ID invalide"))
+                    .build();
+        }
+        try {
+            Reservation r = reservationService.findById(id);
+            if (r == null)
+                return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.ok(r).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
     }
 
     @GET
-    public List<Reservation> findAll() {
-        return reservationService.findAll();
+    public Response findAll() {
+        try {
+            List<Reservation> reservations = reservationService.findAll();
+            return Response.ok(reservations).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
     }
 
     @PUT
     @Path("/{id}")
     public Response update(@PathParam("id") Long id, ReservationRequest request) {
-        User user = userService.findById(request.userId);
-        Event event = eventService.findById(request.eventId);
-        Venue venue = venueService.findById(request.venueId);
-
-        if (user == null || event == null || venue == null) {
+        if (id == null || id <= 0) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("User, Event ou Venue introuvable").build();
+                    .entity(Map.of("error", "ID invalide"))
+                    .build();
         }
+        try {
+            User user = userService.findById(request.userId);
+            Event event = eventService.findById(request.eventId);
+            Venue venue = venueService.findById(request.venueId);
 
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setEvent(event);
-        reservation.setVenue(venue);
-        reservation.setReservationDate(request.reservationDate);
+            if (user == null || event == null || venue == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "User, Event ou Venue introuvable"))
+                        .build();
+            }
 
-        Reservation updated = reservationService.update(id, reservation);
-        if (updated == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            Reservation reservation = new Reservation();
+            reservation.setUser(user);
+            reservation.setEvent(event);
+            reservation.setVenue(venue);
+            reservation.setReservationDate(request.reservationDate);
+
+            Reservation updated = reservationService.update(id, reservation);
+            if (updated == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(updated).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
         }
-        return Response.ok(updated).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
-        boolean deleted = reservationService.delete(id);
-        if (!deleted) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (id == null || id <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "ID invalide"))
+                    .build();
         }
-        return Response.noContent().build();
+        try {
+            boolean deleted = reservationService.delete(id);
+            if (!deleted) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.noContent().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
     }
 }

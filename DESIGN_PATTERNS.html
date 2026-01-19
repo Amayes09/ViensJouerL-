@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Patterns - ViensJouerLà</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .overview {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 40px;
+            border-radius: 4px;
+        }
+        
+        .pattern-section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+        
+        .pattern-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        
+        .pattern-header h2 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .pattern-header .number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        .pattern-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .pattern-details.full {
+            grid-template-columns: 1fr;
+        }
+        
+        .detail-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .detail-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .detail-box p {
+            margin: 8px 0;
+            color: #555;
+        }
+        
+        .detail-box strong {
+            color: #333;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .code-block code {
+            color: #f8f8f2;
+        }
+        
+        .keyword {
+            color: #66d9ef;
+        }
+        
+        .string {
+            color: #e6db74;
+        }
+        
+        .comment {
+            color: #75715e;
+        }
+        
+        .function {
+            color: #a6e22e;
+        }
+        
+        .advantages {
+            background: #f0f7ff;
+            border: 1px solid #667eea;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .advantages h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .advantages ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .advantages li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .advantages li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .json-example {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        .summary-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .summary-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .bonus-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        
+        .footer p {
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .pattern-details {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Design Patterns</h1>
+            <p>Projet ViensJouerLà - Jakarta EE 8</p>
+        </header>
+        
+        <div class="content">
+            <div class="overview">
+                <h2>Vue d'ensemble</h2>
+                <p>Ce document décrit les <strong>3 design patterns obligatoires</strong> et <strong>1 pattern bonus</strong> implémentés dans l'application Jakarta EE, conformément aux exigences du projet.</p>
+            </div>
+            
+            <!-- Pattern 1 -->
+            <div class="pattern-section">
+                <div class="pattern-header">
+                    <span class="number">1</span>
+                    <h2>Event Message</h2>
+                </div>
+                
+                <div class="pattern-details">
+                    <div class="detail-box">
+                        <h3>Localisation</h3>
+                        <p><strong>Fichier :</strong> UserCreatedProducer.java</p>
+                        <p><strong>Catégorie :</strong> Messaging Patterns - Messages</p>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Objectif</h3>
+                        <p>Encapsuler un événement métier dans un message asynchrone pour découpler producteur et consommateurs.</p>
+                    </div>
+                </div>
+                
+                <div class="detail-box full">
+                    <h3>Description</h3>
+                    <p>Le pattern <strong>Event Message</strong> encapsule un événement métier significatif dans un message asynchrone. Ici, chaque création d'utilisateur produit un message JMS contenant les informations pertinentes (id, name, email, timestamp, source).</p>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Implémentation</h3>
+                <div class="code-block"><code><span class="keyword">public void</span> <span class="function">sendUserCreatedEvent</span>(User user) {
+    <span class="comment">// Message contenant l'événement "UserCreated"</span>
+    <span class="keyword">if</span> (user == <span class="keyword">null</span> || user.getName() == <span class="keyword">null</span> || 
+        user.getName().trim().length() < 3) {
+        System.out.println(<span class="string">"[JMS] Message ignore: nom utilisateur trop court."</span>);
+        <span class="keyword">return</span>;
+    }
+    
+    <span class="keyword">try</span> (JMSContext context = factory.createContext()) {
+        Instant timestamp = Instant.now();
+        String payload = translator.toJson(user, timestamp, <span class="string">"user-service"</span>);
+        
+        <span class="comment">// Envoi du message événement dans la queue</span>
+        context.createProducer().send(queue, payload);
+        System.out.println(<span class="string">"[JMS] Message envoyé à Artemis : "</span> + payload);
+    }
+}</code></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Structure du message produit</h3>
+                <div class="json-example">{
+  "id": 1,
+  "name": "Alice Dupont",
+  "email": "alice@example.com",
+  "timestamp": "2026-01-19T10:30:45.123Z",
+  "source": "user-service"
+}</div>
+
+                <div class="advantages">
+                    <h3>Avantages</h3>
+                    <ul>
+                        <li>Découplage entre le producteur et les consommateurs</li>
+                        <li>Traçabilité de tous les événements métier</li>
+                        <li>Possibilité de multiples réactions à un même événement</li>
+                        <li>Communication asynchrone et scalable</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Pattern 2 -->
+            <div class="pattern-section">
+                <div class="pattern-header">
+                    <span class="number">2</span>
+                    <h2>Message Translator</h2>
+                </div>
+                
+                <div class="pattern-details">
+                    <div class="detail-box">
+                        <h3>Localisation</h3>
+                        <p><strong>Fichier :</strong> UserCreatedMessageTranslator.java</p>
+                        <p><strong>Catégorie :</strong> Transformation Patterns</p>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Objectif</h3>
+                        <p>Convertir un objet métier en format de message standardisé (JSON).</p>
+                    </div>
+                </div>
+                
+                <div class="detail-box full">
+                    <h3>Description</h3>
+                    <p>Le pattern <strong>Message Translator</strong> convertit un objet métier (entité <code>User</code>) en un format de message standardisé (JSON). Cela isole la logique de transformation et facilite les changements de format.</p>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Implémentation</h3>
+                <div class="code-block"><code><span class="keyword">public class</span> UserCreatedMessageTranslator {
+    
+    <span class="keyword">public</span> String <span class="function">toJson</span>(User user, Instant timestamp, String source) {
+        String id = user.getId() == <span class="keyword">null</span> ? <span class="string">"null"</span> : 
+                    String.valueOf(user.getId());
+        String name = <span class="function">escapeJson</span>(user.getName());
+        String email = <span class="function">escapeJson</span>(user.getEmail());
+        String time = timestamp == <span class="keyword">null</span> ? <span class="string">""</span> : timestamp.toString();
+        String src = <span class="function">escapeJson</span>(source);
+        
+        <span class="keyword">return</span> <span class="string">"{"</span>
+            + <span class="string">"\"id\":"</span> + id + <span class="string">","</span>
+            + <span class="string">"\"name\":\""</span> + name + <span class="string">"\","</span>
+            + <span class="string">"\"email\":\""</span> + email + <span class="string">"\","</span>
+            + <span class="string">"\"timestamp\":\""</span> + time + <span class="string">"\","</span>
+            + <span class="string">"\"source\":\""</span> + src + <span class="string">"\"}"</span>;
+    }
+    
+    <span class="keyword">private</span> String <span class="function">escapeJson</span>(String s) {
+        <span class="keyword">return</span> s == <span class="keyword">null</span> ? <span class="string">""</span> : 
+               s.replace(<span class="string">"\""</span>, <span class="string">"\\\""</span>);
+    }
+}</code></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Flux de transformation</h3>
+                <div class="diagram">User (entité JPA)
+    ↓
+UserCreatedMessageTranslator.toJson()
+    ↓
+JSON String
+    ↓
+JMS Message
+    ↓
+Queue Artemis</div>
+
+                <div class="advantages">
+                    <h3>Avantages</h3>
+                    <ul>
+                        <li>Séparation des responsabilités : métier ≠ sérialisation</li>
+                        <li>Facile à tester indépendamment</li>
+                        <li>Permet d'ajouter du contexte (timestamp, source) au message</li>
+                        <li>Facilite les changements de format futurs</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Pattern 3 -->
+            <div class="pattern-section">
+                <div class="pattern-header">
+                    <span class="number">3</span>
+                    <h2>Message Filter</h2>
+                </div>
+                
+                <div class="pattern-details">
+                    <div class="detail-box">
+                        <h3>Localisation</h3>
+                        <p><strong>Fichier :</strong> UserCreatedProducer.java (ligne 22-26)</p>
+                        <p><strong>Catégorie :</strong> Routing Patterns</p>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Objectif</h3>
+                        <p>Valider et filtrer les messages avant envoi selon des critères spécifiques.</p>
+                    </div>
+                </div>
+                
+                <div class="detail-box full">
+                    <h3>Description</h3>
+                    <p>Le pattern <strong>Message Filter</strong> contrôle quels messages sont envoyés et lesquels sont rejetés, basé sur des critères spécifiques. Ici, on valide la qualité du message avant envoi pour prévenir les données invalides.</p>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Implémentation</h3>
+                <div class="code-block"><code><span class="keyword">public void</span> <span class="function">sendUserCreatedEvent</span>(User user) {
+    <span class="comment">// MESSAGE FILTER : Valider les critères avant envoi</span>
+    <span class="keyword">if</span> (user == <span class="keyword">null</span> || user.getName() == <span class="keyword">null</span> || 
+        user.getName().trim().length() < 3) {
+        System.out.println(<span class="string">"[JMS] Message ignore: nom utilisateur trop court."</span>);
+        <span class="keyword">return</span>;  <span class="comment">// Message filtré, non envoyé</span>
+    }
+    
+    <span class="comment">// Message valide, continuer le traitement</span>
+    <span class="keyword">try</span> (JMSContext context = factory.createContext()) {
+        <span class="comment">// ...envoi du message</span>
+    }
+}</code></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Critères de filtrage</h3>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>Condition</th>
+                            <th>Résultat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>user == null</code></td>
+                            <td>Objet null</td>
+                            <td>Rejeté</td>
+                        </tr>
+                        <tr>
+                            <td><code>user.getName() == null</code></td>
+                            <td>Nom absent</td>
+                            <td>Rejeté</td>
+                        </tr>
+                        <tr>
+                            <td><code>name.length() < 3</code></td>
+                            <td>Nom trop court</td>
+                            <td>Rejeté</td>
+                        </tr>
+                        <tr>
+                            <td>Tous valides</td>
+                            <td>-</td>
+                            <td>Accepté</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="advantages">
+                    <h3>Avantages</h3>
+                    <ul>
+                        <li>Prévient les données invalides d'être traitées</li>
+                        <li>Réduit les erreurs en aval</li>
+                        <li>Améliore la qualité globale des données</li>
+                        <li>Évite les surcharges de traitement inutile</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bonus Pattern -->
+            <div class="pattern-section">
+                <div class="pattern-header">
+                    <span class="number">+</span>
+                    <h2>Event-Driven Consumer <span class="bonus-badge">BONUS</span></h2>
+                </div>
+                
+                <div class="pattern-details">
+                    <div class="detail-box">
+                        <h3>Localisation</h3>
+                        <p><strong>Fichier :</strong> JmsUserCreatedConsumer.java</p>
+                        <p><strong>Catégorie :</strong> Endpoint Patterns</p>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Objectif</h3>
+                        <p>Écouter les événements et déclencher automatiquement des actions en réaction.</p>
+                    </div>
+                </div>
+                
+                <div class="detail-box full">
+                    <h3>Description</h3>
+                    <p>Le pattern <strong>Event-Driven Consumer</strong> écoute activement les événements et déclenche des actions automatiques en réaction. Ici, chaque message <code>UserCreated</code> reçu crée automatiquement une <code>Notification</code>.</p>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Implémentation</h3>
+                <div class="code-block"><code><span class="keyword">public synchronized void</span> <span class="function">start</span>() {
+    <span class="keyword">if</span> (running) <span class="keyword">return</span>;
+    running = <span class="keyword">true</span>;
+    
+    thread = <span class="keyword">new</span> Thread(() -> {
+        <span class="keyword">try</span> (JMSContext context = connectionFactory.createContext()) {
+            JMSConsumer consumer = context.createConsumer(queue);
+            System.out.println(<span class="string">"Consumer JMS actif sur 'UserCreatedQueue'"</span>);
+            
+            <span class="comment">// Écoute continue</span>
+            <span class="keyword">while</span> (running && !Thread.currentThread().isInterrupted()) {
+                String payload = consumer.receiveBody(String.<span class="keyword">class</span>, 1000);
+                <span class="keyword">if</span> (payload != <span class="keyword">null</span>) {
+                    <span class="function">handleUserCreated</span>(payload);  <span class="comment">// Réaction à l'événement</span>
+                }
+            }
+        }
+    });
+    thread.start();
+}
+
+<span class="keyword">private void</span> <span class="function">handleUserCreated</span>(String payload) {
+    <span class="comment">// Traitement de l'événement</span>
+    JsonNode json = mapper.readTree(payload);
+    Long userId = json.get(<span class="string">"id"</span>).asLong();
+    String email = json.get(<span class="string">"email"</span>).asText();
+    
+    <span class="comment">// Action : créer une Notification</span>
+    notificationService.createNotification(userId, 
+        <span class="string">"Création du compte utilisateur : "</span> + email);
+}</code></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Flux complet du système</h3>
+                <div class="diagram">UserService.register(user)
+    ↓
+UserCreatedProducer.sendUserCreatedEvent()
+    ↓
+Message Filter (validation)
+    ↓
+Message Translator (JSON)
+    ↓
+Queue Artemis (persistence)
+    ↓
+JmsUserCreatedConsumer.handleUserCreated()
+    ↓
+NotificationService.createNotification()
+    ↓
+Notification persisted en base</div>
+
+                <div class="advantages">
+                    <h3>Avantages</h3>
+                    <ul>
+                        <li>Couplage faible entre producteur et consommateur</li>
+                        <li>Réactivité automatique aux événements</li>
+                        <li>Scalabilité : facile d'ajouter de nouveaux consommateurs</li>
+                        <li>Traitement asynchrone sans bloquer le flux principal</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Summary Table -->
+            <div style="margin-top: 50px;">
+                <h2 style="margin-bottom: 20px;">Résumé des patterns</h2>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>Type</th>
+                            <th>Fichier</th>
+                            <th>Bénéfice principal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Event Message</strong></td>
+                            <td>Messaging</td>
+                            <td>UserCreatedProducer</td>
+                            <td>Découplage, asynchronisme</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Message Translator</strong></td>
+                            <td>Transformation</td>
+                            <td>UserCreatedMessageTranslator</td>
+                            <td>Séparation des responsabilités</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Message Filter</strong></td>
+                            <td>Routing</td>
+                            <td>UserCreatedProducer</td>
+                            <td>Qualité des données</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Event-Driven Consumer</strong></td>
+                            <td>Endpoint</td>
+                            <td>JmsUserCreatedConsumer</td>
+                            <td>Réactivité, automatisation</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Design Patterns - Projet ViensJouerLà</strong></p>
+            <p>Architecture Jakarta EE 8 avec Apache ActiveMQ Artemis</p>
+            <p>4 patterns implémentés (3 obligatoires + 1 bonus)</p>
+        </div>
+    </div>
+</body>
+</html>
