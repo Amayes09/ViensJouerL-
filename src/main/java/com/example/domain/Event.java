@@ -29,6 +29,7 @@ public class Event implements Serializable {
     private String gameType; // ex: "FPS", "MOBA"
 
     @Column(nullable = false)
+    @NotNull
     @jakarta.validation.constraints.Min(1)
     private Integer capacity;
 

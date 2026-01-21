@@ -3,7 +3,11 @@ package com.example.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.AssertTrue;
 
 @Entity
 @Table(name = "timeslots")
@@ -15,10 +19,12 @@ public class Timeslot {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
+    @NotNull
     private Date start;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
+    @NotNull
     private Date endTime;
 
     @Column(nullable = false)
@@ -29,7 +35,19 @@ public class Timeslot {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Venue venue;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "timeslot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
+
     public Timeslot() {}
+
+    @AssertTrue(message = "start doit etre avant endTime")
+    public boolean isValidRange() {
+        if (start == null || endTime == null) {
+            return true;
+        }
+        return start.before(endTime);
+    }
 
     // Getters / setters
     public Long getId() { return id; }
@@ -46,4 +64,6 @@ public class Timeslot {
 
     public Venue getVenue() { return venue; }
     public void setVenue(Venue venue) { this.venue = venue; }
+    public List<Reservation> getReservations() { return reservations; }
+    public void setReservations(List<Reservation> reservations) { this.reservations = reservations; }
 }

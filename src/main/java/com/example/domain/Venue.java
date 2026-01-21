@@ -3,6 +3,7 @@ package com.example.domain;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,11 @@ public class Venue implements Serializable {
     private String address;
 
     @Column(nullable = false)
+    @NotNull
     @jakarta.validation.constraints.Min(1)
     private Integer capacity;
 
+    @NotNull
     private Boolean isAvailable = true;
 
     @JsonIgnore
