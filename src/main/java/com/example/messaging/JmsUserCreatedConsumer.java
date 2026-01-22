@@ -1,12 +1,10 @@
 package com.example.messaging;
 
 import com.example.service.NotificationService;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSConsumer;
 import jakarta.jms.JMSContext;
 import jakarta.jms.Queue;
-
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 public class JmsUserCreatedConsumer {
@@ -37,7 +35,7 @@ public class JmsUserCreatedConsumer {
         thread = new Thread(() -> {
             try (JMSContext context = connectionFactory.createContext()) {
                 JMSConsumer consumer = context.createConsumer(queue);
-                System.out.println("👂 Consumer JMS actif sur 'UserCreatedQueue'");
+                System.out.println("[JMS] Consumer active on 'UserCreatedQueue'");
 
                 while (running && !Thread.currentThread().isInterrupted()) {
                     String payload = consumer.receiveBody(String.class, 1000);
@@ -46,7 +44,7 @@ public class JmsUserCreatedConsumer {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("🛑 Arrêt du consumer JMS");
+                System.out.println("[JMS] Consumer stopped");
                 e.printStackTrace();
             }
         }, "jms-usercreated-consumer");
@@ -60,31 +58,25 @@ public class JmsUserCreatedConsumer {
         if (thread != null) thread.interrupt();
     }
 
-    /** Traitement libre: parse JSON + persist Notification */
     private void handleUserCreated(String payload) {
         try {
-            JsonNode json = mapper.readTree(payload);
+            UserCreatedEvent event = mapper.readValue(payload, UserCreatedEvent.class);
 
-            // Ton producer envoie déjà {"id":...,"name":...,"email":...,"timestamp":...}
-            Long userId = json.hasNonNull("id") ? json.get("id").asLong() : null;
-            String email = json.hasNonNull("email") ? json.get("email").asText() : "unknown";
+            Long userId = event == null ? null : event.id;
+            String email = event != null && event.email != null ? event.email : "unknown";
 
             if (userId == null) {
-                System.out.println("⚠️ Message UserCreated invalide (id manquant): " + payload);
+                System.out.println("[JMS] Invalid UserCreated message (missing id): " + payload);
                 return;
             }
 
-            System.out.println("📥 [REÇU] UserCreated id=" + userId + " email=" + email);
+            System.out.println("[JMS] Received UserCreated id=" + userId + " email=" + email);
 
-            System.out.println("Rechargement de l'utilisateur depuis la base (userId=" + userId + ")");
+            notificationService.createNotification(userId, "Creation du compte utilisateur : " + email);
 
-            // ✅ Persist en base (Consumer -> JPA)
-            notificationService.createNotification(userId, "Création du compte utilisateur : " + email);
-
-            System.out.println("📩 Notification créée pour userId=" + userId);
-
+            System.out.println("[JMS] Notification created for userId=" + userId);
         } catch (Exception e) {
-            System.out.println("❌ Erreur traitement message JMS: " + e.getMessage());
+            System.out.println("[JMS] Error processing message: " + e.getMessage());
             e.printStackTrace();
         }
     }
