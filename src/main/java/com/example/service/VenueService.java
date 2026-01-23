@@ -1,11 +1,13 @@
 package com.example.service;
 
 import com.example.domain.Venue;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
+@Stateless
 public class VenueService {
 
     @Inject

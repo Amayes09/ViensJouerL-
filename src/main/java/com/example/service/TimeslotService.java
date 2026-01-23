@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.domain.Timeslot;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -8,8 +9,8 @@ import java.util.List;
 import com.example.domain.Venue;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
-import com.example.domain.Venue;
 
+@Stateless
 public class TimeslotService {
 
     @Inject

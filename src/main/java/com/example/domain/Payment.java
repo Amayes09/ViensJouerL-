@@ -13,7 +13,7 @@ public class Payment {
     private Long id;
 
     private BigDecimal amount;
-    private String method; // Carte, PayPal
+    private String method;
     private Boolean isConfirmed = false;
 
     @OneToOne(optional = false)
@@ -22,7 +22,6 @@ public class Payment {
     private Reservation reservation;
 
     public void processPayment() {
-        // Simuler la validation
         this.isConfirmed = true;
     }
 

@@ -41,7 +41,6 @@ public class Venue implements Serializable {
 
     public Venue() {}
 
-    // Getters et Setters (existants)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -57,7 +56,6 @@ public class Venue implements Serializable {
     public Boolean getIsAvailable() { return isAvailable; }
     public void setIsAvailable(Boolean available) { isAvailable = available; }
 
-    // ✅ Ajouts demandés (3.A)
     public List<Reservation> getReservations() {
         return reservations;
     }

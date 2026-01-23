@@ -1,7 +1,6 @@
 version: '3.9'
 
 services:
-  # Base de données (Gardez votre config postgres)
   db:
     image: postgres:15
     container_name: starter-db
@@ -15,7 +14,6 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
 
-  # AJOUT : Broker JMS (Artemis) indispensable pour la messagerie
   artemis:
     image: apache/activemq-artemis:latest
     container_name: artemis-broker
@@ -24,8 +22,8 @@ services:
       - ARTEMIS_PASSWORD=admin
       - ANONYMOUS_LOGIN=true
     ports:
-      - "8161:8161"   # Console web
-      - "61616:61616" # Port JMS (utilisé par votre code Java)
+      - "8161:8161"
+      - "61616:61616"
     volumes:
       - artemisdata:/var/lib/artemis-instance
 

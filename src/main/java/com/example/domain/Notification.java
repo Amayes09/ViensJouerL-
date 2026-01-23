@@ -24,8 +24,7 @@ public class Notification {
         if (createdAt == null) createdAt = Instant.now();
     }
 
-    // !!!!! jointure ici absente sur le schéma
-    @ManyToOne(optional = false) // recommandé
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -38,7 +37,6 @@ public class Notification {
     }
 
 
-    // Getters et setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

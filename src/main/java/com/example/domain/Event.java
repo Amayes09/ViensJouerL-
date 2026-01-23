@@ -26,7 +26,7 @@ public class Event implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date eventDate;
 
-    private String gameType; // ex: "FPS", "MOBA"
+    private String gameType;
 
     @Column(nullable = false)
     @NotNull
@@ -58,7 +58,6 @@ public class Event implements Serializable {
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
 
-    // ✅ Ajouts demandés (3.A)
     public List<Reservation> getReservations() {
         return reservations;
     }

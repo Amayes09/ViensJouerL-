@@ -5,6 +5,7 @@ import com.example.domain.Reservation;
 import com.example.domain.Timeslot;
 import com.example.domain.User;
 import com.example.domain.Venue;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -14,6 +15,7 @@ import jakarta.ws.rs.WebApplicationException;
 import java.util.Date;
 import java.util.List;
 
+@Stateless
 public class ReservationService {
 
     @Inject
