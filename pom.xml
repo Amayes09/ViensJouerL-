@@ -32,7 +32,8 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.4.4.Final</version> </dependency>
+            <version>6.4.4.Final</version>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -58,12 +59,6 @@
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>8.0.0</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.2</version>
         </dependency>
 
         <dependency>
@@ -160,6 +155,23 @@
         <finalName>starter</finalName>
         
         <plugins>
+            <!-- Exec Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>main</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.example.Main</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Payara Micro (optional but helpful for quick dev runs) -->
             <plugin>
                 <groupId>fish.payara.maven.plugins</groupId>
