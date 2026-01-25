@@ -39,12 +39,12 @@ public class Main {
         NotificationService notificationService = new NotificationService();
         notificationService.setEmf(emf); // Setter public disponible
 
-        // 3. Démarrage du Consommateur JMS (Background Thread)
+        // 3. Démarrage du Consommateur JMS 
         System.out.println("--- 3. Démarrage du Consommateur JMS ---");
         JmsUserCreatedConsumer consumer = new JmsUserCreatedConsumer(jmsFactory, userQueue, notificationService);
         consumer.start();
 
-        // 4. DATA SEEDING (Peuplement de la base)
+        // 4. DATA SEEDING
         System.out.println("--- 4. Exécution du DataSeeder ---");
         try {
             // a) Instanciation des services nécessaires
@@ -56,7 +56,7 @@ public class Main {
             PaymentService paymentService = new PaymentService();
             UserCreatedProducer producer = new UserCreatedProducer();
 
-            // b) Injection des dépendances techniques (EMF) via Réflexion
+            // b) Injection des dépendances techniques
             // Nécessaire car @Inject ne fonctionne pas hors du conteneur Jersey
             injectDependency(userService, "emf", emf);
             injectDependency(venueService, "emf", emf);
@@ -68,10 +68,9 @@ public class Main {
             // c) Injection spécifique pour le Messaging (Producer)
             injectDependency(producer, "factory", jmsFactory);
             injectDependency(producer, "queue", userQueue);
-            userService.setProducer(producer); // Setter public
+            userService.setProducer(producer);
 
             // d) Lancement du Seeder
-            // Ordre : User, Venue, Event, Timeslot, Reservation, Payment, Notification
             DataSeeder seeder = new DataSeeder(
                     userService,
                     venueService,
@@ -97,7 +96,6 @@ public class Main {
         rc.register(new AbstractBinder() {
             @Override
             protected void configure() {
-                // Infra
                 bind(emf).to(EntityManagerFactory.class);
                 bind(jmsFactory).to(ConnectionFactory.class);
                 bind(userQueue).to(Queue.class);
@@ -111,7 +109,7 @@ public class Main {
                 bindAsContract(PaymentService.class);
                 bindAsContract(TimeslotService.class);
 
-                // Singleton (instance partagée)
+                // Instance partagée
                 bind(notificationService).to(NotificationService.class);
             }
         });
@@ -122,7 +120,7 @@ public class Main {
         System.out.println("APPLICATION PRÊTE SUR : " + BASE_URI);
         System.out.println("=================================");
 
-        // Hook d'arrêt propre
+        // Hook d'arrêt
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\n Arrêt en cours");
             try {

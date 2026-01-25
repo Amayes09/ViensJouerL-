@@ -98,5 +98,287 @@ L’architecture met en œuvre plusieurs patterns (couche service, séparation d
 - Reservation → User/Event/Venue/Timeslot : ManyToOne
 - Notification → User : ManyToOne
 
+## URL de base
+
+Le projet expose les endpoints sous `/api`.
+
+- Mode standalone (Main.java / Grizzly):
+  `http://localhost:8080/api`
+
+---
+
+## Endpoints disponibles
+
+### Users (`/users`)
+- `POST /users` - creer un utilisateur
+  ```json
+  {
+    "name": "Jean Dupont",
+    "email": "jean@example.com",
+    "password": "secret",
+    "isAdmin": false
+  }
+  ```
+- `GET /users` - liste des utilisateurs
+- `GET /users/{id}` - detail d'un utilisateur
+- `PUT /users/{id}` - modifier un utilisateur (meme schema que POST)
+- `DELETE /users/{id}` - supprimer un utilisateur
+
+---
+
+### Events (`/events`)
+- `POST /events` - creer un evenement
+  ```json
+  {
+    "title": "Concert 2026",
+    "description": "Un super concert",
+    "eventDate": "2026-06-12T20:00:00Z",
+    "gameType": "concert",
+    "capacity": 500
+  }
+  ```
+- `GET /events` - liste des evenements
+- `GET /events/{id}` - detail d'un evenement
+- `PUT /events/{id}` - modifier un evenement (meme schema que POST)
+- `DELETE /events/{id}` - supprimer un evenement
+
+---
+
+### Venues (`/venues`)
+- `POST /venues` - creer une salle
+  ```json
+  {
+    "name": "Zenith de Paris",
+    "address": "211 avenue Jean Jaures",
+    "capacity": 2000,
+    "isAvailable": true
+  }
+  ```
+- `GET /venues` - liste des salles
+- `GET /venues/{id}` - detail d'une salle
+- `PUT /venues/{id}` - modifier une salle (meme schema que POST)
+- `DELETE /venues/{id}` - supprimer une salle
+
+---
+
+### Timeslots (`/timeslots`)
+- `POST /timeslots` - creer un creneau
+  ```json
+  {
+    "start": "2026-01-15T19:00:00Z",
+    "endTime": "2026-01-15T21:00:00Z",
+    "venue": { "id": 1 }
+  }
+  ```
+- `GET /timeslots` - liste des creneaux
+- `GET /timeslots/{id}` - detail d'un creneau
+- `PUT /timeslots/{id}` - modifier un creneau (meme schema que POST)
+- `DELETE /timeslots/{id}` - supprimer un creneau
+
+---
+
+### Reservations (`/reservations`)
+- `POST /reservations` - creer une reservation
+  ```json
+  {
+    "userId": 1,
+    "eventId": 1,
+    "venueId": 1,
+    "timeslotId": 1,
+    "reservationDate": "2026-01-15T19:10:00Z"
+  }
+  ```
+- `GET /reservations` - liste des reservations
+- `GET /reservations/{id}` - detail d'une reservation
+- `PUT /reservations/{id}` - modifier une reservation (meme schema que POST)
+- `DELETE /reservations/{id}` - supprimer une reservation
+
+---
+
+### Payments (`/payments`)
+- `POST /payments` - creer un paiement
+  ```json
+  {
+    "reservationId": 1,
+    "amount": 75.50,
+    "method": "carte"
+  }
+  ```
+- `GET /payments` - liste des paiements
+- `GET /payments/{id}` - detail d'un paiement
+- `PUT /payments/{id}` - modifier un paiement (meme schema que POST)
+- `DELETE /payments/{id}` - supprimer un paiement
+
+---
+
+### Notifications (`/notifications`)
+- `POST /notifications` - creer une notification
+  ```json
+  {
+    "userId": 1,
+    "message": "Votre reservation est confirmee"
+  }
+  ```
+- `GET /notifications` - liste des notifications
+- `GET /notifications/{id}` - detail d'une notification
+- `PUT /notifications/{id}` - modifier une notification (meme schema que POST)
+- `DELETE /notifications/{id}` - supprimer une notification
+
+---
+
+## Exemples avec Postman
+
+Base URL :
+```
+http://localhost:8080/api
+```
+
+### Creer un utilisateur
+- Method: `POST`
+- URL: `{{baseUrl}}/users`
+- Headers: `Content-Type: application/json`
+- Body (raw / JSON):
+```json
+{
+  "name": "Alice Martin",
+  "email": "alice@example.com",
+  "password": "secret"
+}
+```
+
+### Creer un evenement
+- Method: `POST`
+- URL: `{{baseUrl}}/events`
+- Headers: `Content-Type: application/json`
+- Body (raw / JSON):
+```json
+{
+  "title": "Festival de musique",
+  "description": "Le plus grand festival de l\"annee",
+  "eventDate": "2026-06-12T20:00:00Z",
+  "gameType": "festival",
+  "capacity": 1000
+}
+```
+
+### Creer une salle
+- Method: `POST`
+- URL: `{{baseUrl}}/venues`
+- Headers: `Content-Type: application/json`
+- Body (raw / JSON):
+```json
+{
+  "name": "Zenith de Paris",
+  "address": "211 avenue Jean Jaures",
+  "capacity": 2000,
+  "isAvailable": true
+}
+```
+
+### Creer un creneau
+- Method: `POST`
+- URL: `{{baseUrl}}/timeslots`
+- Headers: `Content-Type: application/json`
+- Body (raw / JSON):
+```json
+{
+  "start": "2026-01-15T19:00:00Z",
+  "endTime": "2026-01-15T21:00:00Z",
+  "venue": { "id": 1 }
+}
+```
+
+### Creer une reservation
+- Method: `POST`
+- URL: `{{baseUrl}}/reservations`
+- Headers: `Content-Type: application/json`
+- Body (raw / JSON):
+```json
+{
+  "userId": 1,
+  "eventId": 1,
+  "venueId": 1,
+  "timeslotId": 1,
+  "reservationDate": "2026-01-15T19:10:00Z"
+}
+```
+
+---
+
+## Scenario complet: creer une reservation
+
+Ce scenario suppose que la base est vide. Remplace les ids par ceux retournes par chaque creation.
+
+1) Creer un utilisateur
+- POST `{{baseUrl}}/users`
+```json
+{
+  "name": "Alice Martin",
+  "email": "alice@example.com",
+  "password": "secret"
+}
+```
+
+2) Creer une salle
+- POST `{{baseUrl}}/venues`
+```json
+{
+  "name": "Zenith de Paris",
+  "address": "211 avenue Jean Jaures",
+  "capacity": 2000,
+  "isAvailable": true
+}
+```
+
+3) Creer un evenement
+- POST `{{baseUrl}}/events`
+```json
+{
+  "title": "Festival de musique",
+  "description": "Le plus grand festival de l\"annee",
+  "eventDate": "2026-06-12T20:00:00Z",
+  "gameType": "festival",
+  "capacity": 1000
+}
+```
+
+4) Creer un creneau lie a la salle
+- POST `{{baseUrl}}/timeslots`
+```json
+{
+  "start": "2026-01-15T19:00:00Z",
+  "endTime": "2026-01-15T21:00:00Z",
+  "venue": { "id": 1 }
+}
+```
+
+5) Creer la reservation
+- POST `{{baseUrl}}/reservations`
+```json
+{
+  "userId": 1,
+  "eventId": 1,
+  "venueId": 1,
+  "timeslotId": 1,
+  "reservationDate": "2026-01-15T19:10:00Z"
+}
+```
+
+6) (Optionnel) Creer un paiement
+- POST `{{baseUrl}}/payments`
+```json
+{
+  "reservationId": 1,
+  "amount": 75.50,
+  "method": "carte"
+}
+```
+
+---
+
+## Notes
+- Les champs `user`, `event`, `venue`, `timeslot` sont ignores dans les reponses JSON des reservations (annotations `@JsonIgnore`).
+- Les erreurs usuelles: `400` si la requete est invalide, `404` si l'entite n'existe pas.
+
 ## Équipe
 Projet réalisé par : Alexandre DU, Nazim Ouamer Ali, Mehdi Atmane et Amayes Goulmane.
