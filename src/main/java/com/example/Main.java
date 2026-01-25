@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         System.out.println("=================================");
-        System.out.println("🚀 DÉMARRAGE DE L'APPLICATION");
+        System.out.println("DÉMARRAGE DE L'APPLICATION");
         System.out.println("=================================");
 
         // 1. Initialisation de l'infrastructure (DB + Messaging)
@@ -83,7 +83,7 @@ public class Main {
             seeder.seed();
 
         } catch (Exception e) {
-            System.err.println("⚠️ ALERTE : Le DataSeeding a rencontré une erreur (mais le serveur va continuer).");
+            System.err.println("Le DataSeeding a rencontré une erreur (mais le serveur va continuer).");
             System.err.println("Détail : " + e.getMessage());
             e.printStackTrace();
         }
@@ -119,13 +119,12 @@ public class Main {
         final var server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
 
         System.out.println("=================================");
-        System.out.println("✅ APPLICATION PRÊTE SUR : " + BASE_URI);
-        System.out.println("👉 Appuyez sur Entrée pour arrêter...");
+        System.out.println("APPLICATION PRÊTE SUR : " + BASE_URI);
         System.out.println("=================================");
 
         // Hook d'arrêt propre
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("\n🛑 Arrêt en cours...");
+            System.out.println("\n Arrêt en cours");
             try {
                 server.shutdownNow();
             } catch (Exception ignored) {
@@ -165,13 +164,13 @@ public class Main {
             field.setAccessible(true);
             field.set(target, value);
         } catch (NoSuchFieldException e) {
-            System.err.println("⚠️ Champ '" + fieldName + "' introuvable dans " + target.getClass().getSimpleName());
+            System.err.println("Champ '" + fieldName + "' introuvable dans " + target.getClass().getSimpleName());
         } catch (IllegalAccessException e) {
             System.err
-                    .println("⚠️ Accès refusé au champ '" + fieldName + "' dans " + target.getClass().getSimpleName());
+                    .println("Accès refusé au champ '" + fieldName + "' dans " + target.getClass().getSimpleName());
         } catch (Exception e) {
             System.err
-                    .println("⚠️ Erreur d'injection dans " + target.getClass().getSimpleName() + ": " + e.getMessage());
+                    .println("Erreur d'injection dans " + target.getClass().getSimpleName() + ": " + e.getMessage());
         }
     }
 }

@@ -30,16 +30,16 @@ public class DataSeeder {
     }
 
     public void seed() {
-        System.out.println("🌱 Initialisation des données de test...");
+        System.out.println("Initialisation des données de test");
 
         // --- 1. UTILISATEURS ---
+        User player = new User("Alexandre", "alexandre@example.com", "secret");
+        // Cela déclenchera l'événement JMS "UserCreated" -> Notification automatique
+        userService.register(player);
+
         User admin = new User("Admin", "admin@viensjouer.com", "admin123");
         admin.setIsAdmin(true);
         userService.register(admin);
-
-        User player = new User("Jean Joueur", "jean@gmail.com", "password");
-        // Cela déclenchera l'événement JMS "UserCreated" -> Notification automatique
-        userService.register(player);
 
         // --- 2. LIEUX (VENUES) ---
         Venue arena = new Venue();
@@ -80,38 +80,37 @@ public class DataSeeder {
         timeslotService.create(slot1);
 
         // --- 5. RÉSERVATION (RESERVATION) ---
-        // Jean Joueur réserve le slot1 pour le tournoi à l'Arena
         try {
             Reservation resa = reservationService.createWithChecks(
                     player.getId(),
                     tournoi.getId(),
                     arena.getId(),
                     slot1.getId(),
-                    new Date() // Date de réservation = maintenant
+                    new Date()
             );
-            System.out.println("✅ Réservation créée avec l'ID : " + resa.getId());
+            System.out.println(" Réservation créée avec l'ID : " + resa.getId());
 
             // --- 6. PAIEMENT (PAYMENT) ---
             Payment payment = new Payment();
-            payment.setAmount(new BigDecimal("25.00")); // Prix fictif
+            payment.setAmount(new BigDecimal("25.00")); 
             payment.setMethod("CB");
             payment.setReservation(resa);
-            payment.processPayment(); // Confirme le paiement
+            payment.processPayment();
 
             paymentService.create(payment);
-            System.out.println("✅ Paiement validé pour la réservation.");
+            System.out.println("Paiement validé pour la réservation.");
 
         } catch (Exception e) {
-            System.err.println("⚠️ Erreur lors de la création de la réservation : " + e.getMessage());
+            System.err.println("Erreur lors de la création de la réservation : " + e.getMessage());
         }
 
         // --- 7. NOTIFICATION MANUELLE (NOTIFICATION) ---
         // En plus de la notification JMS automatique, on en ajoute une manuelle
         Notification manualNotif = new Notification();
         manualNotif.setUser(player);
-        manualNotif.setMessage("Rappel : N'oubliez pas votre manette pour le tournoi !");
+        manualNotif.setMessage("Rappel : N'oubliez pas votre manette pour le tournoi :) !");
         notificationService.create(manualNotif);
 
-        System.out.println("✅ Données initialisées avec succès !");
+        System.out.println("Données initialisées avec succès !");
     }
 }

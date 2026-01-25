@@ -13,7 +13,7 @@ public class PersistenceExceptionMapper implements ExceptionMapper<PersistenceEx
 
     @Override
     public Response toResponse(PersistenceException ex) {
-        // Chercher l'exception racine
+
         Throwable root = ex;
         while (root.getCause() != null) {
             root = root.getCause();
@@ -22,7 +22,6 @@ public class PersistenceExceptionMapper implements ExceptionMapper<PersistenceEx
         String rootMsg = root.getMessage() != null ? root.getMessage().toLowerCase() : "";
         String exMsg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
 
-        // Détection "doublon email" (Postgres + Hibernate)
         boolean duplicate =
                 rootMsg.contains("duplicate key") ||
                         rootMsg.contains("already exists") ||

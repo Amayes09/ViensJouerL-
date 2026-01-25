@@ -18,7 +18,6 @@ public class ReservationResource {
     @Inject
     private ReservationService reservationService;
 
-    // DTO pour la requête
     public static class ReservationRequest {
         public Long userId;
         public Long eventId;

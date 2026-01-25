@@ -16,7 +16,7 @@ public class UserCreatedProducer {
     private final UserCreatedMessageTranslator translator = new UserCreatedMessageTranslator();
 
     public void sendUserCreatedEvent(User user) {
-        // Message Filter: ignore invalid payloads before publish
+
         if (user == null || user.getId() == null || isBlank(user.getEmail())) {
             System.out.println("[JMS] Message ignored: invalid user payload.");
             return;

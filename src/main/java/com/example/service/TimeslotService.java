@@ -27,7 +27,6 @@ public class TimeslotService {
 
             em.getTransaction().begin();
 
-            // Venue "managé" (très important)
             Long venueId = timeslot.getVenue().getId();
             Venue managedVenue = em.find(Venue.class, venueId);
             if (managedVenue == null) throw new NotFoundException("Venue introuvable: " + venueId);

@@ -98,10 +98,10 @@ public class NotificationService {
             User managedUser = em.find(User.class, userId);
             if (managedUser == null) {
                 em.getTransaction().rollback();
-                System.out.println("⚠️ Notification non créée : userId=" + userId + " introuvable");
+                System.out.println("Notification non créée : userId=" + userId + " introuvable");
                 return;
             }
-            System.out.println("✅ utilisateur rechargé en base → email=" + managedUser.getEmail());
+            System.out.println("Utilisateur rechargé en base → email=" + managedUser.getEmail());
 
             Notification notification = new Notification(message, managedUser);
             em.persist(notification);
