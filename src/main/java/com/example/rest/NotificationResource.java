@@ -1,23 +1,16 @@
 package com.example.rest;
 
-import java.util.List;
-
 import com.example.domain.Notification;
 import com.example.domain.User;
 import com.example.service.NotificationService;
 import com.example.service.UserService;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.time.Instant;
+import java.util.List;
 
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,68 +23,67 @@ public class NotificationResource {
     @Inject
     private UserService userService;
 
+    public static class NotificationRequest {
+        public Long userId;
+        public String message;
+    }
+
     @POST
-    public Notification createNotification(
-        @QueryParam("userId") Long userId,
-        @QueryParam("message") String message
-    ) {
-        User user = userService.findUser(userId);
-        if (user != null) {
-            return notificationService.createNotification(user, message);
+    public Response create(NotificationRequest request) {
+        User user = userService.findById(request.userId);
+        if (user == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("User introuvable").build();
         }
-        return null;
+
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setMessage(request.message);
+        notification.setCreatedAt(Instant.now());
+
+        notificationService.create(notification);
+
+        return Response.status(Response.Status.CREATED).entity(notification).build();
     }
 
     @GET
     @Path("/{id}")
-    public Notification getNotificationById(@PathParam("id") Long id) {
-        return notificationService.findNotification(id);
+    public Response findById(@PathParam("id") Long id) {
+        Notification n = notificationService.findById(id);
+        if (n == null) return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(n).build();
     }
 
     @GET
-    public List<Notification> getAllNotifications() {
-        return notificationService.getAllNotifications();
-    }
-
-    @GET
-    @Path("/user/{userId}")
-    public List<Notification> getNotificationsByUser(@PathParam("userId") Long userId) {
-        return notificationService.findNotificationsByUser(userId);
-    }
-
-    @GET
-    @Path("/user/{userId}/recent")
-    public List<Notification> getRecentNotifications(
-        @PathParam("userId") Long userId,
-        @QueryParam("days") int days
-    ) {
-        if (days <= 0) {
-            days = 7; // Par défaut 7 jours
-        }
-        return notificationService.findRecentNotifications(userId, days);
+    public List<Notification> findAll() {
+        return notificationService.findAll();
     }
 
     @PUT
     @Path("/{id}")
-    public Notification updateNotification(
-        @PathParam("id") Long id,
-        @QueryParam("message") String message
-    ) {
-        return notificationService.updateNotification(id, message);
+    public Response update(@PathParam("id") Long id, NotificationRequest request) {
+        User user = userService.findById(request.userId);
+        if (user == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("User introuvable").build();
+        }
+
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setMessage(request.message);
+
+        Notification updated = notificationService.update(id, notification);
+        if (updated == null) return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(updated).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteNotification(@PathParam("id") Long id) {
-        notificationService.deleteNotification(id);
-    }
-
-    @DELETE
-    @Path("/cleanup")
-    public void deleteOldNotifications(@QueryParam("days") int days) {
-        if (days <= 0) {
-            days = 30; // Par défaut 30 jours
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = notificationService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-        notificationService.deleteOldNotifications(days);
+        return Response.noContent().build();
     }
 }

@@ -1,21 +1,12 @@
 package com.example.rest;
 
-import java.util.List;
-
 import com.example.domain.Event;
 import com.example.service.EventService;
-
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/events")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,36 +17,43 @@ public class EventResource {
     private EventService eventService;
 
     @POST
-    public Event createEvent(Event event) {
-        return eventService.createEvent(event.getTitle(), event.getDescription());
+    public Response create(Event event) {
+        eventService.create(event);
+        return Response.status(Response.Status.CREATED).entity(event).build();
     }
 
     @GET
     @Path("/{id}")
-    public Event getEventById(@PathParam("id") Long id) {
-        return eventService.findEvent(id);
+    public Response findById(@PathParam("id") Long id) {
+        Event event = eventService.findById(id);
+        if (event == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(event).build();
     }
 
     @GET
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+    public List<Event> findAll() {
+        return eventService.findAll();
     }
 
     @PUT
     @Path("/{id}")
-    public Event updateEvent(@PathParam("id") Long id, Event event) {
-        return eventService.updateEvent(id, event.getTitle(), event.getDescription());
+    public Response update(@PathParam("id") Long id, Event event) {
+        Event updated = eventService.update(id, event);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteEvent(@PathParam("id") Long id) {
-        eventService.deleteEvent(id);
-    }
-
-    @GET
-    @Path("/search")
-    public List<Event> searchEventsByTitle(@QueryParam("title") String title) {
-        return eventService.findEventsByTitle(title);
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = eventService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
     }
 }

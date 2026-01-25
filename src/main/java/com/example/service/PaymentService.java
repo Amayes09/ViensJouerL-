@@ -1,77 +1,93 @@
 package com.example.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.example.domain.Payment;
-import com.example.domain.Reservation;
-
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import java.util.List;
 
 @Stateless
 public class PaymentService {
 
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Payment createPayment(Reservation reservation, BigDecimal amount, String method) {
-        Payment payment = new Payment();
-        payment.setReservation(reservation);
-        payment.setAmount(amount);
-        payment.setMethod(method);
-        em.persist(payment);
-        return payment;
-    }
-
-    public Payment findPayment(Long id) {
-        return em.find(Payment.class, id);
-    }
-
-    public List<Payment> getAllPayments() {
-        Query q = em.createQuery("SELECT p FROM Payment p");
-        return q.getResultList();
-    }
-
-    public List<Payment> findPaymentsByReservation(Long reservationId) {
-        Query q = em.createQuery("SELECT p FROM Payment p WHERE p.reservation.id = :reservationId");
-        q.setParameter("reservationId", reservationId);
-        return q.getResultList();
-    }
-
-    public List<Payment> findPaymentsByMethod(String method) {
-        Query q = em.createQuery("SELECT p FROM Payment p WHERE p.method = :method");
-        q.setParameter("method", method);
-        return q.getResultList();
-    }
-
-    public Payment updatePayment(Long id, BigDecimal amount, String method) {
-        Payment payment = em.find(Payment.class, id);
-        if (payment != null) {
-            payment.setAmount(amount);
-            payment.setMethod(method);
-            em.merge(payment);
-        }
-        return payment;
-    }
-
-    public void deletePayment(Long id) {
-        Payment payment = em.find(Payment.class, id);
-        if (payment != null) {
-            em.remove(payment);
+    public void create(Payment payment) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(payment);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public boolean validatePayment(Long paymentId) {
-        Payment payment = em.find(Payment.class, paymentId);
-        return payment != null && payment.getAmount().compareTo(BigDecimal.ZERO) > 0;
+    public Payment findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Payment.class, id);
+        } finally {
+            em.close();
+        }
     }
 
-    public BigDecimal calculateTotalPayments() {
-        Query q = em.createQuery("SELECT SUM(p.amount) FROM Payment p");
-        BigDecimal total = (BigDecimal) q.getSingleResult();
-        return total != null ? total : BigDecimal.ZERO;
+    public List<Payment> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM Payment p", Payment.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Payment update(Long id, Payment data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Payment existing = em.find(Payment.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setAmount(data.getAmount());
+            existing.setMethod(data.getMethod());
+            existing.setReservation(data.getReservation());
+            existing.setIsConfirmed(data.getIsConfirmed());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Payment existing = em.find(Payment.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 }

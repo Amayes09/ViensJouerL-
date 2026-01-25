@@ -1,76 +1,119 @@
 package com.example.service;
 
-import java.util.Date;
-import java.util.List;
-
 import com.example.domain.Timeslot;
-
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import java.util.List;
+import com.example.domain.Venue;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 
 @Stateless
 public class TimeslotService {
 
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Timeslot createTimeslot(Date start, Date end) {
-        Timeslot timeslot = new Timeslot(start, end);
-        em.persist(timeslot);
-        return timeslot;
-    }
+    public Timeslot create(Timeslot timeslot) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (timeslot == null) throw new BadRequestException("Timeslot manquant");
+            if (timeslot.getStart() == null || timeslot.getEndTime() == null)
+                throw new BadRequestException("start et endTime sont obligatoires");
+            if (timeslot.getVenue() == null || timeslot.getVenue().getId() == null)
+                throw new BadRequestException("venue.id est obligatoire");
 
-    public Timeslot findTimeslot(Long id) {
-        return em.find(Timeslot.class, id);
-    }
+            em.getTransaction().begin();
 
-    public List<Timeslot> getAllTimeslots() {
-        Query q = em.createQuery("SELECT t FROM Timeslot t");
-        return q.getResultList();
-    }
+            Long venueId = timeslot.getVenue().getId();
+            Venue managedVenue = em.find(Venue.class, venueId);
+            if (managedVenue == null) throw new NotFoundException("Venue introuvable: " + venueId);
 
-    public List<Timeslot> getAvailableTimeslots() {
-        Query q = em.createQuery("SELECT t FROM Timeslot t WHERE t.isReserved = false");
-        return q.getResultList();
-    }
+            timeslot.setVenue(managedVenue);
 
-    public List<Timeslot> getReservedTimeslots() {
-        Query q = em.createQuery("SELECT t FROM Timeslot t WHERE t.isReserved = true");
-        return q.getResultList();
-    }
+            em.persist(timeslot);
+            em.getTransaction().commit();
+            return timeslot;
 
-    public Timeslot updateTimeslot(Long id, Date start, Date end) {
-        Timeslot timeslot = em.find(Timeslot.class, id);
-        if (timeslot != null) {
-            timeslot.setStart(start);
-            timeslot.setEnd(end);
-            em.merge(timeslot);
-        }
-        return timeslot;
-    }
-
-    public void deleteTimeslot(Long id) {
-        Timeslot timeslot = em.find(Timeslot.class, id);
-        if (timeslot != null) {
-            em.remove(timeslot);
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public void reserveTimeslot(Long id) {
-        Timeslot timeslot = em.find(Timeslot.class, id);
-        if (timeslot != null && !timeslot.isReserved()) {
-            timeslot.setReserved(true);
-            em.merge(timeslot);
+    public Timeslot findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Timeslot.class, id);
+        } finally {
+            em.close();
         }
     }
 
-    public void releaseTimeslot(Long id) {
-        Timeslot timeslot = em.find(Timeslot.class, id);
-        if (timeslot != null) {
-            timeslot.setReserved(false);
-            em.merge(timeslot);
+    public List<Timeslot> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT t FROM Timeslot t", Timeslot.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Timeslot update(Long id, Timeslot data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Timeslot existing = em.find(Timeslot.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+
+            existing.setStart(data.getStart());
+            existing.setEndTime(data.getEndTime());
+            existing.setReserved(data.isReserved());
+
+            if (data.getVenue() != null && data.getVenue().getId() != null) {
+                Venue managedVenue = em.find(Venue.class, data.getVenue().getId());
+                if (managedVenue == null) {
+                    em.getTransaction().rollback();
+                    return null; // ou NotFoundException
+                }
+                existing.setVenue(managedVenue);
+            }
+
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Timeslot existing = em.find(Timeslot.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 }

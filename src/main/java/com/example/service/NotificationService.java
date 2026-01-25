@@ -1,74 +1,122 @@
 package com.example.service;
 
-import java.time.Instant;
-import java.util.List;
-
 import com.example.domain.Notification;
 import com.example.domain.User;
-
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import java.util.List;
 
 @Stateless
 public class NotificationService {
 
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Notification createNotification(User user, String message) {
-        Notification notification = new Notification(message, user);
-        em.persist(notification);
-        return notification;
-    }
-
-    public Notification findNotification(Long id) {
-        return em.find(Notification.class, id);
-    }
-
-    public List<Notification> getAllNotifications() {
-        Query q = em.createQuery("SELECT n FROM Notification n ORDER BY n.createdAt DESC");
-        return q.getResultList();
-    }
-
-    public List<Notification> findNotificationsByUser(Long userId) {
-        Query q = em.createQuery("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.createdAt DESC");
-        q.setParameter("userId", userId);
-        return q.getResultList();
-    }
-
-    public List<Notification> findRecentNotifications(Long userId, int days) {
-        Query q = em.createQuery(
-            "SELECT n FROM Notification n WHERE n.user.id = :userId " +
-            "AND n.createdAt >= :startDate ORDER BY n.createdAt DESC"
-        );
-        q.setParameter("userId", userId);
-        Instant startDate = Instant.now().minusSeconds(days * 86400L);
-        q.setParameter("startDate", startDate);
-        return q.getResultList();
-    }
-
-    public Notification updateNotification(Long id, String message) {
-        Notification notification = em.find(Notification.class, id);
-        if (notification != null) {
-            notification.setMessage(message);
-            em.merge(notification);
-        }
-        return notification;
-    }
-
-    public void deleteNotification(Long id) {
-        Notification notification = em.find(Notification.class, id);
-        if (notification != null) {
-            em.remove(notification);
+    public void create(Notification notification) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(notification);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public void deleteOldNotifications(int days) {
-        Instant cutoffDate = Instant.now().minusSeconds(days * 86400L);
-        Query q = em.createQuery("DELETE FROM Notification n WHERE n.createdAt < :cutoffDate");
-        q.setParameter("cutoffDate", cutoffDate);
-        q.executeUpdate();
+    public Notification findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Notification.class, id);
+        } finally {
+            em.close();
+        }
     }
+
+    public List<Notification> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT n FROM Notification n", Notification.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Notification update(Long id, Notification data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Notification existing = em.find(Notification.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setMessage(data.getMessage());
+            existing.setUser(data.getUser());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Notification existing = em.find(Notification.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public void createNotification(Long userId, String message) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            User managedUser = em.find(User.class, userId);
+            if (managedUser == null) {
+                em.getTransaction().rollback();
+                System.out.println("Notification non créée : userId=" + userId + " introuvable");
+                return;
+            }
+            System.out.println("Utilisateur rechargé en base → email=" + managedUser.getEmail());
+
+            Notification notification = new Notification(message, managedUser);
+            em.persist(notification);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
 }

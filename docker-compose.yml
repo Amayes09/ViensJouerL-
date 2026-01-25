@@ -1,15 +1,14 @@
-version: "3.9"
+version: '3.9'
 
 services:
-
   db:
     image: postgres:15
     container_name: starter-db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: starterdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: monmotdepasse
+      POSTGRES_DB: viensjouerdb
     ports:
       - "5432:5432"
     volumes:
@@ -28,8 +27,8 @@ services:
       - ARTEMIS_PASSWORD=admin
       - ANONYMOUS_LOGIN=true
     ports:
-      - "8161:8161"   # Console web
-      - "61616:61616" # Port JMS
+      - "8161:8161"
+      - "61616:61616"
     volumes:
       - artemisdata:/var/lib/artemis-instance
 

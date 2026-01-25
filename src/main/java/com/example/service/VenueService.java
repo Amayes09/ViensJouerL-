@@ -1,67 +1,93 @@
 package com.example.service;
 
-import java.util.List;
-
 import com.example.domain.Venue;
-
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import java.util.List;
 
 @Stateless
 public class VenueService {
 
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Venue createVenue(String name, String address, String postalCode, String city) {
-        Venue venue = new Venue();
-        venue.setName(name);
-        venue.setAddress(address);
-        venue.setPostalCode(postalCode);
-        venue.setCity(city);
-        em.persist(venue);
-        return venue;
-    }
-
-    public Venue findVenue(Long id) {
-        return em.find(Venue.class, id);
-    }
-
-    public List<Venue> getAllVenues() {
-        Query q = em.createQuery("SELECT v FROM Venue v");
-        return q.getResultList();
-    }
-
-    public Venue updateVenue(Long id, String name, String address, String postalCode, String city) {
-        Venue venue = em.find(Venue.class, id);
-        if (venue != null) {
-            venue.setName(name);
-            venue.setAddress(address);
-            venue.setPostalCode(postalCode);
-            venue.setCity(city);
-            em.merge(venue);
-        }
-        return venue;
-    }
-
-    public void deleteVenue(Long id) {
-        Venue venue = em.find(Venue.class, id);
-        if (venue != null) {
-            em.remove(venue);
+    public void create(Venue venue) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(venue);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public List<Venue> findVenuesByCity(String city) {
-        Query q = em.createQuery("SELECT v FROM Venue v WHERE v.city = :city");
-        q.setParameter("city", city);
-        return q.getResultList();
+    public Venue findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Venue.class, id);
+        } finally {
+            em.close();
+        }
     }
 
-    public List<Venue> findVenuesByPostalCode(String postalCode) {
-        Query q = em.createQuery("SELECT v FROM Venue v WHERE v.postalCode = :postalCode");
-        q.setParameter("postalCode", postalCode);
-        return q.getResultList();
+    public List<Venue> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT v FROM Venue v", Venue.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Venue update(Long id, Venue data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Venue existing = em.find(Venue.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setName(data.getName());
+            existing.setAddress(data.getAddress());
+            existing.setCapacity(data.getCapacity());
+            existing.setIsAvailable(data.getIsAvailable());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Venue existing = em.find(Venue.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 }

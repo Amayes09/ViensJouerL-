@@ -1,5 +1,9 @@
 package com.example.domain;
 
+import com.example.domain.User;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -20,37 +24,42 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private com.example.domain.User user;
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
+    @JsonIgnore
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "venue_id")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "venue_id", nullable = false)
+    @JsonIgnore
     private Venue venue;
 
-    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "timeslot_id", nullable = false)
+    @JsonIgnore
+    private Timeslot timeslot;
+
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    @NotNull
     private Date reservationDate;
 
-    public Reservation() {}
-
-    public Reservation(User user, Event event, Venue venue) {
-        this.user = user;
-        this.event = event;
-        this.venue = venue;
-        this.reservationDate = new Date();
-    }
-
-    // Getters et setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public com.example.domain.User getUser() { return user; }
+    public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
     public Event getEvent() { return event; }
@@ -59,9 +68,19 @@ public class Reservation {
     public Venue getVenue() { return venue; }
     public void setVenue(Venue venue) { this.venue = venue; }
 
+    public Timeslot getTimeslot() { return timeslot; }
+    public void setTimeslot(Timeslot timeslot) { this.timeslot = timeslot; }
+
     public Payment getPayment() { return payment; }
     public void setPayment(Payment payment) { this.payment = payment; }
 
     public Date getReservationDate() { return reservationDate; }
     public void setReservationDate(Date reservationDate) { this.reservationDate = reservationDate; }
+
+    @PrePersist
+    public void prePersist() {
+        if (reservationDate == null) {
+            reservationDate = new Date();
+        }
+    }
 }

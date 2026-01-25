@@ -1,27 +1,14 @@
 package com.example.rest;
 
-import java.util.List;
-
-import com.example.domain.Event;
 import com.example.domain.Reservation;
-import com.example.domain.User;
-import com.example.domain.Venue;
-import com.example.service.EventService;
 import com.example.service.ReservationService;
-import com.example.service.UserService;
-import com.example.service.VenueService;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.Date;
+import java.util.List;
 
 @Path("/reservations")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,87 +18,72 @@ public class ReservationResource {
     @Inject
     private ReservationService reservationService;
 
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private EventService eventService;
-
-    @Inject
-    private VenueService venueService;
+    public static class ReservationRequest {
+        public Long userId;
+        public Long eventId;
+        public Long venueId;
+        public Long timeslotId;
+        public Date reservationDate;
+    }
 
     @POST
-    public Reservation createReservation(
-        @QueryParam("userId") Long userId,
-        @QueryParam("eventId") Long eventId,
-        @QueryParam("venueId") Long venueId
-    ) {
-        User user = userService.findUser(userId);
-        Event event = eventService.findEvent(eventId);
-        Venue venue = venueService.findVenue(venueId);
-
-        if (user != null && event != null && venue != null) {
-            return reservationService.createReservation(user, event, venue);
+    public Response create(ReservationRequest request) {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Requete invalide").build();
         }
-        return null;
+        Reservation reservation = reservationService.createWithChecks(
+                request.userId,
+                request.eventId,
+                request.venueId,
+                request.timeslotId,
+                request.reservationDate
+        );
+        return Response.status(Response.Status.CREATED).entity(reservation).build();
     }
 
     @GET
     @Path("/{id}")
-    public Reservation getReservationById(@PathParam("id") Long id) {
-        return reservationService.findReservation(id);
+    public Response findById(@PathParam("id") Long id) {
+        Reservation r = reservationService.findById(id);
+        if (r == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(r).build();
     }
 
     @GET
-    public List<Reservation> getAllReservations() {
-        return reservationService.getAllReservations();
-    }
-
-    @GET
-    @Path("/user/{userId}")
-    public List<Reservation> getReservationsByUser(@PathParam("userId") Long userId) {
-        return reservationService.findReservationsByUser(userId);
-    }
-
-    @GET
-    @Path("/event/{eventId}")
-    public List<Reservation> getReservationsByEvent(@PathParam("eventId") Long eventId) {
-        return reservationService.findReservationsByEvent(eventId);
-    }
-
-    @GET
-    @Path("/venue/{venueId}")
-    public List<Reservation> getReservationsByVenue(@PathParam("venueId") Long venueId) {
-        return reservationService.findReservationsByVenue(venueId);
+    public List<Reservation> findAll() {
+        return reservationService.findAll();
     }
 
     @PUT
     @Path("/{id}")
-    public Reservation updateReservation(
-        @PathParam("id") Long id,
-        @QueryParam("userId") Long userId,
-        @QueryParam("eventId") Long eventId,
-        @QueryParam("venueId") Long venueId
-    ) {
-        User user = userService.findUser(userId);
-        Event event = eventService.findEvent(eventId);
-        Venue venue = venueService.findVenue(venueId);
-
-        if (user != null && event != null && venue != null) {
-            return reservationService.updateReservation(id, user, event, venue);
+    public Response update(@PathParam("id") Long id, ReservationRequest request) {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Requete invalide").build();
         }
-        return null;
+        Reservation updated = reservationService.updateWithChecks(
+                id,
+                request.userId,
+                request.eventId,
+                request.venueId,
+                request.timeslotId,
+                request.reservationDate
+        );
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteReservation(@PathParam("id") Long id) {
-        reservationService.deleteReservation(id);
-    }
-
-    @DELETE
-    @Path("/{id}/cancel")
-    public void cancelReservation(@PathParam("id") Long id) {
-        reservationService.cancelReservation(id);
+    public Response delete(@PathParam("id") Long id) {
+        boolean deleted = reservationService.delete(id);
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
     }
 }

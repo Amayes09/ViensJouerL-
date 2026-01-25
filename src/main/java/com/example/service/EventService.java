@@ -1,57 +1,94 @@
 package com.example.service;
 
-import java.util.List;
-
 import com.example.domain.Event;
-
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import java.util.List;
 
 @Stateless
 public class EventService {
 
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    private EntityManagerFactory emf;
 
-    public Event createEvent(String title, String description) {
-        Event event = new Event();
-        event.setTitle(title);
-        event.setDescription(description);
-        em.persist(event);
-        return event;
-    }
-
-    public Event findEvent(Long id) {
-        return em.find(Event.class, id);
-    }
-
-    public List<Event> getAllEvents() {
-        Query q = em.createQuery("SELECT e FROM Event e");
-        return q.getResultList();
-    }
-
-    public Event updateEvent(Long id, String title, String description) {
-        Event event = em.find(Event.class, id);
-        if (event != null) {
-            event.setTitle(title);
-            event.setDescription(description);
-            em.merge(event);
-        }
-        return event;
-    }
-
-    public void deleteEvent(Long id) {
-        Event event = em.find(Event.class, id);
-        if (event != null) {
-            em.remove(event);
+    public void create(Event event) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(event);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public List<Event> findEventsByTitle(String title) {
-        Query q = em.createQuery("SELECT e FROM Event e WHERE e.title LIKE :title");
-        q.setParameter("title", "%" + title + "%");
-        return q.getResultList();
+    public Event findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Event.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Event> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT e FROM Event e", Event.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Event update(Long id, Event data) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Event existing = em.find(Event.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return null;
+            }
+            existing.setTitle(data.getTitle());
+            existing.setDescription(data.getDescription());
+            existing.setEventDate(data.getEventDate());
+            existing.setGameType(data.getGameType());
+            existing.setCapacity(data.getCapacity());
+            em.getTransaction().commit();
+            return existing;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Event existing = em.find(Event.class, id);
+            if (existing == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            em.remove(existing);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 }
